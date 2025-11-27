@@ -1,0 +1,11 @@
+[
+  {
+    "id": "c9dd2b07-1ac2-45bb-a51f-e57919a3f3db",
+    "titulo": "Prueba JSON",
+    "descripcion": "Verificando si guarda",
+    "estado": "Pendiente",
+    "dificultad": "Medio",
+    "fechaCreacion": "2025-11-27T05:53:58.904Z",
+    "ultimaEdicion": "2025-11-27T05:53:58.904Z"
+  }
+]
