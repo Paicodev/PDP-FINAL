@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import { Tarea } from './Tarea';
 import { IPersistencia } from './IPersistencia';
 
-/* constante para la ruta del archivo JSON
+/* Constante para la ruta del archivo JSON,
 Para que la ruta del archivo sea inmutable y fácil de gestionar*/
 
 const RUTA_ARCHIVO = './tareas.json'; 

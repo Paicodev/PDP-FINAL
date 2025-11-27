@@ -1,14 +1,23 @@
 import { Tarea, TareaEstado, TareaDificultad } from './Tarea';
-
+import { IPersistencia } from './IPersistencia'; 
 
 export class gestorTareas {
     
     // POO: Encapsulamos el estado. Nadie fuera de esta clase
     // puede acceder o modificar el array de tareas directamente.
     private tareas: Tarea[] = [];
+    private persistencia: IPersistencia; 
 
-    constructor() {
-       //Constructor vacio.
+    
+    constructor(estrategia: IPersistencia) {
+        //estrategia lo manejará luego el modulo main.ts
+        this.persistencia = estrategia;
+        this.tareas = this.persistencia.cargar(); 
+    }
+
+    //Metodo impuro porque modifica el estado interno
+    private guardarCambios(): void {
+        this.persistencia.guardar(this.tareas);
     }
 
     /**
@@ -24,7 +33,9 @@ export class gestorTareas {
         const nuevaTarea = new Tarea(titulo, descripcion, dificultad, fechaVencimiento);
         //impuro
         this.tareas.push(nuevaTarea);
-        // TODO: Aquí llamaremos a 'guardarTareas()' de PersistenciaTareas
+        
+        this.guardarCambios();
+
         return nuevaTarea;
     }
 
@@ -68,7 +79,7 @@ export class gestorTareas {
         if (tarea) {
             // Usamos el método 'update' de la propia Tarea
             tarea.update(titulo, descripcion, dificultad, estado, fechaVencimiento); // Asumo que Tarea.ts tiene update()
-           
+           this.guardarCambios(); 
             return true;
         }
         return false; // No se encontró la tarea
@@ -85,7 +96,7 @@ export class gestorTareas {
         // Solo la "borramos" si existe y no está ya cancelada
         if (tarea && tarea.getEstado() !== 'Cancelada') { // Asumo getEstado()
             tarea.setEstado('Cancelada'); // Asumo setEstado()
-            
+            this.guardarCambios();
             return true;
         }
         return false;
