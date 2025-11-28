@@ -44,24 +44,7 @@ export class PersistenciaJSON implements IPersistencia {
 
             // MAPEO: Transformamos datos crudos (JSON) en Instancias Reales (Objetos Tarea)
             // hacemos uso de una funcion flecha porque es mas conciso
-            return json.map((t: any) => {
-                 // 1. Instanciamos para recuperar los métodos de la clase
-                 const tarea = new Tarea(
-                    t.titulo, 
-                    t.descripcion, 
-                    t.dificultad, 
-                    t.fechaVencimiento ? new Date(t.fechaVencimiento) : undefined
-                 );
-                 
-                 // 2. Restauramos el estado interno (IDs, Fechas y Estado)
-                 // Usamos 'as any' para acceder a props privadas durante la carga
-                 (tarea as any).id = t.id;
-                 (tarea as any).estado = t.estado;
-                 (tarea as any).fechaCreacion = new Date(t.fechaCreacion);
-                 (tarea as any).ultimaEdicion = new Date(t.ultimaEdicion);
-                 
-                 return tarea;
-            });
+            return json.map((dato: any) => Tarea.recuperadorJSON(dato));
         } catch (error) {
             console.error("Error al leer el archivo JSON:", error);
             return [];

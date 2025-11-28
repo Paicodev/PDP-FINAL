@@ -1,7 +1,7 @@
 import { Tarea, TareaEstado, TareaDificultad } from '../models/Tarea';
 import { IPersistencia } from '../interfaces/IPersistencia'; 
 
-export class gestorTareas {
+export class GestorTareas {
     
     // POO: Encapsulamos el estado. Nadie fuera de esta clase
     // puede acceder o modificar el array de tareas directamente.

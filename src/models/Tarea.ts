@@ -106,6 +106,27 @@ export class Tarea {
             default: return '';
         }
     }
+
+    // Método para reconstruir las tareas
+    // Recibe un objeto plano (JSON) y devuelve una Tarea válida.
+    // Al ser estático y estar DENTRO de la clase, puede acceder a los privados.
+    public static recuperadorJSON(json: any): Tarea {
+        // Creamos la instancia de Tarea
+        const tarea = new Tarea(
+            json.titulo,
+            json.descripcion,
+            json.dificultad,
+            json.fechaVencimiento ? new Date(json.fechaVencimiento) : undefined
+        );
+
+        // Restauramos los privados
+        tarea.id = json.id;
+        tarea.estado = json.estado;
+        tarea.fechaCreacion = new Date(json.fechaCreacion);
+        tarea.ultimaEdicion = new Date(json.ultimaEdicion);
+
+        return tarea;
+    }
     
     public getId(): string {
          return this.id; 

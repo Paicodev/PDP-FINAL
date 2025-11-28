@@ -1,4 +1,4 @@
-import { gestorTareas } from './controllers/gestorTareas';
+import { GestorTareas } from 'controllers/GestorTareas';
 import { PersistenciaJSON } from './services/PersistenciaJSON';
 
 console.log("--- INICIO DE PRUEBA ---");
@@ -7,7 +7,7 @@ console.log("--- INICIO DE PRUEBA ---");
 const estrategiaJSON = new PersistenciaJSON();
 
 // Iniciamos el gestor con la estrategia de persistencia deseada
-const gestor = new gestorTareas(estrategiaJSON);
+const gestor = new GestorTareas(estrategiaJSON);
 
 console.log(`Tareas iniciales: ${gestor.obtenerTodasLasTareas().length}`);
 
@@ -22,7 +22,7 @@ console.log(`Visual: ${tarea.getDificultadVisual()}`);
 // Simulamos un reinicio (si no tuviesemos persistencia, perderíamos todo)
 console.log("\n--- SIMULANDO REINICIO DE APP ---");
 //creamos variable nueva de gestorTareas, para simular reinicio
-const gestorNuevo = new gestorTareas(estrategiaJSON);
+const gestorNuevo = new GestorTareas(estrategiaJSON);
 const tareasRecuperadas = gestorNuevo.obtenerTodasLasTareas();
 
 console.log(`Tareas recuperadas del disco: ${tareasRecuperadas.length}`);
