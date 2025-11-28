@@ -1,5 +1,5 @@
-import { Tarea, TareaEstado, TareaDificultad } from './Tarea';
-import { IPersistencia } from './IPersistencia'; 
+import { Tarea, TareaEstado, TareaDificultad } from '../models/Tarea';
+import { IPersistencia } from '../interfaces/IPersistencia'; 
 
 export class gestorTareas {
     

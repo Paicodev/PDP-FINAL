@@ -1,6 +1,6 @@
 import * as fs from 'fs';
-import { Tarea } from './Tarea';
-import { IPersistencia } from './IPersistencia';
+import { Tarea } from '../models/Tarea';
+import { IPersistencia } from '../interfaces/IPersistencia';
 
 /* Constante para la ruta del archivo JSON,
 Para que la ruta del archivo sea inmutable y fácil de gestionar*/

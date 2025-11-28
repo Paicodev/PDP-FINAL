@@ -1,5 +1,5 @@
-import { gestorTareas } from './gestorTareas';
-import { PersistenciaJSON } from './PersistenciaJSON';
+import { gestorTareas } from './controllers/gestorTareas';
+import { PersistenciaJSON } from './services/PersistenciaJSON';
 
 console.log("--- INICIO DE PRUEBA ---");
 
