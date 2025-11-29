@@ -6,26 +6,33 @@ const PersistenciaJSON_1 = require("./services/PersistenciaJSON");
 const PersistenciaSQL_1 = require("./services/PersistenciaSQL");
 //SELECCIÓN DE ESTRATEGIA 
 function configurarBaseDeDatos() {
-    console.clear();
-    console.log("========================================");
-    console.log("     CONFIGURACIÓN DE ALMACENAMIENTO    ");
-    console.log("========================================");
-    console.log("Selecciones el motor de persistencia");
-    console.log("1. Archivo de Texto (JSON)");
-    console.log("2- Base de Datos Local (SQLite)");
-    console.log("========================================");
-    const opcion = (0, Entradas_1.input)("Elige una opción (1-2): ");
-    let estrategia;
-    if (opcion === '2') {
-        console.log(">> Iniciando motor SQL...");
-        estrategia = new PersistenciaSQL_1.PersistenciaSQL();
-    }
-    else {
-        console.log(">> Iniciando sistema de archivos JSON...");
-        estrategia = new PersistenciaJSON_1.PersistenciaJSON();
+    let opcion = '';
+    let estrategia = null;
+    while (opcion !== '1' && opcion !== '2') {
+        console.clear();
+        console.log("========================================");
+        console.log("     CONFIGURACIÓN DE ALMACENAMIENTO    ");
+        console.log("========================================");
+        console.log("Selecciones el motor de persistencia");
+        console.log("1. Archivo de Texto (JSON)");
+        console.log("2- Base de Datos Local (SQLite)");
+        console.log("========================================");
+        opcion = (0, Entradas_1.input)("Elige una opción (1-2): ");
+        if (opcion === '2') {
+            console.log(">> Iniciando motor SQL...");
+            estrategia = new PersistenciaSQL_1.PersistenciaSQL();
+        }
+        else if (opcion == '1') {
+            console.log(">> Iniciando sistema de archivos JSON...");
+            estrategia = new PersistenciaJSON_1.PersistenciaJSON();
+        }
+        else {
+            console.log(" Opción inválida. Intente nuevamente.");
+            (0, Entradas_1.input)("Presiona ENTER para reintentar...");
+        }
     }
     // Inyección de Dependencias: El gestor recibe la estrategia elegida
-    return new GestorTareas_1.GestorTareas(estrategia);
+    return new GestorTareas_1.GestorTareas(estrategia); //aqui el signo ! quiere decir que estrategia no es null.
 }
 //Logica de Presentación
 function mostrarEncabezado() {
@@ -77,6 +84,8 @@ function main() {
                 pausa();
                 break;
             case '2':
+                //se limpia la consola para que no este sucia, esto evita que baje el texto al escribir algo.
+                console.clear();
                 const busqueda = (0, Entradas_1.input)("\nIngrese palabra clave: ");
                 const resultados = gestor.buscarTareasPorTitulo(busqueda);
                 mostrarLista(resultados);
@@ -108,12 +117,30 @@ function main() {
                 pausa();
                 break;
             case '5':
-                const idEliminar = (0, Entradas_1.input)("\nIngrese el ID de la tarea a eliminar: ");
-                const exito = gestor.eliminarTarea(idEliminar);
-                if (exito)
-                    console.log("🗑️ Tarea eliminada (Soft Delete).");
-                else
-                    console.log(" No se encontró la tarea.");
+                console.clear();
+                console.log("--- Eliminar Tarea ---");
+                const tareasActivas = gestor.obtenerTareasActivas();
+                console.log("0- Salir");
+                if (tareasActivas.length === 0) {
+                    console.log("No hay tareas para eliminar.ra eliminar.");
+                }
+                else {
+                    mostrarLista(tareasActivas);
+                    const borrar = (0, Entradas_1.input)("\nIngrese el numero de la tarea a eliminar: ");
+                    const indiceArray = parseInt(borrar) - 1;
+                    if (borrar === '0') {
+                        console.log("Operación cancelada.");
+                    }
+                    else if (indiceArray >= 0 && indiceArray < tareasActivas.length) {
+                        const tareaABorrar = tareasActivas[indiceArray];
+                        const idReal = tareaABorrar.getId();
+                        gestor.eliminarTarea(idReal);
+                        console.log("Tarea " + tareaABorrar.getTitulo() + " eliminada (Soft Delete).");
+                    }
+                    else {
+                        console.log("Número inválido: esa tarea no existe:");
+                    }
+                }
                 pausa();
                 break;
             case '6':

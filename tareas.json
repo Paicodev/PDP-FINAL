@@ -16,5 +16,14 @@
     "dificultad": "Fácil",
     "fechaCreacion": "2025-11-29T02:48:32.869Z",
     "ultimaEdicion": "2025-11-29T02:48:32.869Z"
+  },
+  {
+    "id": "0ca9eb6a-9cec-4691-8e5e-89e29bfbe2dc",
+    "titulo": "Comer pan",
+    "descripcion": "quiero comer pan, tengo hambre",
+    "estado": "Cancelada",
+    "dificultad": "Difícil",
+    "fechaCreacion": "2025-11-29T04:45:22.231Z",
+    "ultimaEdicion": "2025-11-29T05:10:57.972Z"
   }
 ]

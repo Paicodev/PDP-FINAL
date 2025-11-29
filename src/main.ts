@@ -21,8 +21,7 @@ function configurarBaseDeDatos(): GestorTareas{
     console.log("2- Base de Datos Local (SQLite)");
     console.log("========================================");
 
-    const opcion = input("Elige una opción (1-2): ");
-    let estrategia: IPersistencia;
+    opcion = input("Elige una opción (1-2): ");
 
     if (opcion === '2') {
         console.log(">> Iniciando motor SQL...");
@@ -67,14 +66,14 @@ function pausa() {
     input("\nPresiona ENTER para continuar...");
 }
 // ==========================================
-// 3. BUCLE PRINCIPAL (Programación Estructurada)
+// BUCLE PRINCIPAL (Programación Estructurada)
 // ==========================================
 function main() {
-    // Paso 1: Configurar el sistema
+    //Configurar el sistema
     const gestor = configurarBaseDeDatos();
     let salir = false;
 
-    // Paso 2: Bucle de aplicación
+    //Bucle de aplicación
     while (!salir) {
         mostrarEncabezado();
         console.log("1. Ver todas las tareas");
@@ -131,11 +130,31 @@ function main() {
                 break;
 
             case '5':
-                //To-do: cambiar la forma de eliminar sin ingresar todo el id
-                const idEliminar = input("\nIngrese el ID de la tarea a eliminar: ");
-                const exito = gestor.eliminarTarea(idEliminar);
-                if (exito) console.log(" Tarea eliminada (Soft Delete).");
-                else console.log(" No se encontró la tarea.");
+                console.clear();
+                console.log("--- Eliminar Tarea ---");
+
+                const tareasActivas = gestor.obtenerTareasActivas();
+                console.log("0- Salir");
+                if(tareasActivas.length === 0){
+                    console.log("No hay tareas para eliminar.");
+                }else{
+
+                    mostrarLista(tareasActivas);
+                    const borrar = input("\nIngrese el numero de la tarea a eliminar: ");
+                    const indiceArray = parseInt(borrar) - 1;
+
+                    if(borrar === '0'){
+                        console.log("Operación cancelada.");
+                    }else if(indiceArray >= 0 && indiceArray < tareasActivas.length){
+                        const tareaABorrar = tareasActivas[indiceArray];
+                        const idReal = tareaABorrar.getId();
+
+                        gestor.eliminarTarea(idReal);
+                        console.log("Tarea "+ tareaABorrar.getTitulo() +" eliminada (Soft Delete).");
+                    } else{
+                        console.log("Número inválido: esa tarea no existe:");
+                    }
+                }
                 pausa();
                 break;
             
