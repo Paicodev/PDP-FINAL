@@ -65,6 +65,47 @@ function mostrarLista(tareas: Tarea[]) {
 function pausa() {
     input("\nPresiona ENTER para continuar...");
 }
+
+// ==========================================
+// Eliminar Tarea - Funcion extraida para evitar callback hell
+// ==========================================
+function EliminarTarea(gestor: GestorTareas) {
+    console.clear();
+    console.log("--- ELIMINAR TAREA ---");
+
+    // Obtenemos las tareas activas
+    const activas = gestor.obtenerTareasActivas();
+    if (activas.length === 0) {
+        console.log("No hay tareas disponibles para eliminar.");
+        return; 
+
+    // Mostramos las opciones para eliminar
+    mostrarLista(activas);
+    console.log("0. Cancelar");
+
+    // guardamos la selección
+    const borrar = input("\nIngrese el NÚMERO de la tarea a eliminar: ");
+    
+    // cancelación
+    if (borrar === '0') {
+        console.log("Operación cancelada.");
+        return; 
+    }
+
+    // validamos la entrada al valor correspondiente
+    const indice = parseInt(borrar) - 1;
+
+    
+    if (indice >= 0 && indice < activas.length) {
+        // eliminamos la tarea seleccionada
+        const tarea = activas[indice];
+        gestor.eliminarTarea(tarea.getId());
+        console.log(`Tarea "${tarea.getTitulo()}" eliminada correctamente.`);
+    } else {
+        console.log("Opción inválida: El número ingresado no existe.");
+    }
+}
+}
 // ==========================================
 // BUCLE PRINCIPAL (Programación Estructurada)
 // ==========================================
@@ -131,30 +172,7 @@ function main() {
 
             case '5':
                 console.clear();
-                console.log("--- Eliminar Tarea ---");
-
-                const tareasActivas = gestor.obtenerTareasActivas();
-                console.log("0- Salir");
-                if(tareasActivas.length === 0){
-                    console.log("No hay tareas para eliminar.");
-                }else{
-
-                    mostrarLista(tareasActivas);
-                    const borrar = input("\nIngrese el numero de la tarea a eliminar: ");
-                    const indiceArray = parseInt(borrar) - 1;
-
-                    if(borrar === '0'){
-                        console.log("Operación cancelada.");
-                    }else if(indiceArray >= 0 && indiceArray < tareasActivas.length){
-                        const tareaABorrar = tareasActivas[indiceArray];
-                        const idReal = tareaABorrar.getId();
-
-                        gestor.eliminarTarea(idReal);
-                        console.log("Tarea "+ tareaABorrar.getTitulo() +" eliminada (Soft Delete).");
-                    } else{
-                        console.log("Número inválido: esa tarea no existe:");
-                    }
-                }
+                EliminarTarea(gestor);
                 pausa();
                 break;
             
