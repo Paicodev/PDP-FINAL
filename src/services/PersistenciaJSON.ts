@@ -44,7 +44,7 @@ export class PersistenciaJSON implements IPersistencia {
 
             // MAPEO: Transformamos datos crudos (JSON) en Instancias Reales (Objetos Tarea)
             // hacemos uso de una funcion flecha porque es mas conciso
-            return json.map((dato: any) => Tarea.recuperadorJSON(dato));
+            return json.map((dato: any) => Tarea.importarTarea(dato));
         } catch (error) {
             console.error("Error al leer el archivo JSON:", error);
             return [];

@@ -110,7 +110,7 @@ export class Tarea {
     // Método para reconstruir las tareas
     // Recibe un objeto plano (JSON) y devuelve una Tarea válida.
     // Al ser estático y estar DENTRO de la clase, puede acceder a los privados.
-    public static recuperadorJSON(json: any): Tarea {
+    public static importarTarea(json: any): Tarea {
         // Creamos la instancia de Tarea
         const tarea = new Tarea(
             json.titulo,
