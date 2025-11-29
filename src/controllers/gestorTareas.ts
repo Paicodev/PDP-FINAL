@@ -64,6 +64,19 @@ export class GestorTareas {
     }
 
     /**
+     * Busca tareas cuyo título coincida parcialmente con el término dado (variable: "clave").
+     * (PF: Uso de .filter y funciones de orden superior HOF)
+     */
+    public buscarTareasPorTitulo(clave: string): Tarea[] {
+        const claveLower = clave.toLowerCase().trim();
+        
+        // Filtramos las tareas que incluyan el texto (ignorando mayúsculas)
+        return this.tareas.filter(tarea => 
+            tarea.getTitulo().toLowerCase().includes(claveLower)
+        );
+    }
+
+    /**
      * Actualiza una tarea existente.
      * (POO: Método que modifica el estado de un objeto encapsulado)
      */
