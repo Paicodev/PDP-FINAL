@@ -48,6 +48,15 @@ class GestorTareas {
         return this.tareas.filter(tarea => tarea.getEstado() !== 'Cancelada'); // Asumo que Tarea.ts tiene getEstado()
     }
     /**
+     * Busca tareas cuyo título coincida parcialmente con el término dado (variable: "clave").
+     * (PF: Uso de .filter y funciones de orden superior HOF)
+     */
+    buscarTareasPorTitulo(clave) {
+        const claveLower = clave.toLowerCase().trim();
+        // Filtramos las tareas que incluyan el texto (ignorando mayúsculas)
+        return this.tareas.filter(tarea => tarea.getTitulo().toLowerCase().includes(claveLower));
+    }
+    /**
      * Actualiza una tarea existente.
      * (POO: Método que modifica el estado de un objeto encapsulado)
      */

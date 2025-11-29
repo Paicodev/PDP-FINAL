@@ -1,31 +1,160 @@
+import { input } from './utils/Entradas';
 import { GestorTareas } from './controllers/GestorTareas';
 import { PersistenciaJSON } from './services/PersistenciaJSON';
 import { PersistenciaSQL } from './services/PersistenciaSQL';
+import { Tarea } from './models/Tarea';
+import { IPersistencia } from './interfaces/IPersistencia';
 
-console.log("--- INICIO DE PRUEBA ---");
+//SELECCIÓN DE ESTRATEGIA 
+function configurarBaseDeDatos(): GestorTareas{
+    let opcion = '';
+    let estrategia: IPersistencia | null = null;
 
-//guardamos la estrategia en una instancia de la clase PersistenciaJSON
-const estrategiaJSON = new PersistenciaJSON();
-const estrategiaSQL = new PersistenciaSQL();
+    while(opcion !== '1' && opcion !== '2'){
+        
+    console.clear();
+    console.log("========================================");
+    console.log("     CONFIGURACIÓN DE ALMACENAMIENTO    ");
+    console.log("========================================");
+    console.log("Selecciones el motor de persistencia");
+    console.log("1. Archivo de Texto (JSON)");
+    console.log("2- Base de Datos Local (SQLite)");
+    console.log("========================================");
 
-// Iniciamos el gestor con la estrategia de persistencia deseada
-//const gestor = new GestorTareas(estrategiaJSON);//
-const gestor = new GestorTareas(estrategiaSQL);
+    const opcion = input("Elige una opción (1-2): ");
+    let estrategia: IPersistencia;
 
-console.log(`Tareas iniciales: ${gestor.obtenerTodasLasTareas().length}`);
+    if (opcion === '2') {
+        console.log(">> Iniciando motor SQL...");
+        estrategia = new PersistenciaSQL();
+    } else if (opcion == '1'){
+        console.log(">> Iniciando sistema de archivos JSON...");
+        estrategia = new PersistenciaJSON();
+    }else {
+        console.log(" Opción inválida. Intente nuevamente.");
+            input("Presiona ENTER para reintentar...");
+    }
+    
+    }
+    // Inyección de Dependencias: El gestor recibe la estrategia elegida
+    return new GestorTareas(estrategia!); //aqui el signo ! quiere decir que estrategia no es null.
+}
 
-// Agregamos una tarea
-console.log("Agregando tarea de prueba...");
-const tarea = gestor.agregarTarea("Prueba sql", "Verificando si guarda", "Medio");
-console.log(`Tarea creada con ID: ${tarea.getId()}`);
+//Logica de Presentación
 
-// Verificamos si tiene métodos (Si esto falla, la clase Tarea está mal)
-console.log(`Visual: ${tarea.getDificultadVisual()}`);
+function mostrarEncabezado(){
+    console.clear();
+    console.log("========================================");
+    console.log("   GESTOR DE TAREAS - PARADIGMAS        ");
+    console.log("========================================");
+}
 
-// Simulamos un reinicio (si no tuviesemos persistencia, perderíamos todo)
-console.log("\n--- SIMULANDO REINICIO DE APP ---");
-//creamos variable nueva de gestorTareas, para simular reinicio
-const gestorNuevo = new GestorTareas(estrategiaJSON);
-const tareasRecuperadas = gestorNuevo.obtenerTodasLasTareas();
+function mostrarLista(tareas: Tarea[]) {
+    if (tareas.length === 0) {
+        console.log("\n(No hay tareas registradas)");
+        return;
+    }
+    console.log("\n--- LISTADO DE TAREAS ---");
+    tareas.forEach((t, i) => {
+        // Usamos los getters de la clase Tarea
+        console.log(`${i + 1}. [${t.getEstado()}] ${t.getTitulo()} ${t.getDificultadVisual()}`);
+        console.log(`   ID: ${t.getId()}`); // Mostramos ID para operaciones
+        if (t.getDescripcion()) console.log(`   Desc: ${t.getDescripcion()}`);
+    });
+}
 
-console.log(`Tareas recuperadas del disco: ${tareasRecuperadas.length}`);
+function pausa() {
+    input("\nPresiona ENTER para continuar...");
+}
+// ==========================================
+// 3. BUCLE PRINCIPAL (Programación Estructurada)
+// ==========================================
+function main() {
+    // Paso 1: Configurar el sistema
+    const gestor = configurarBaseDeDatos();
+    let salir = false;
+
+    // Paso 2: Bucle de aplicación
+    while (!salir) {
+        mostrarEncabezado();
+        console.log("1. Ver todas las tareas");
+        console.log("2. Buscar tarea por título");
+        console.log("3. Agregar nueva tarea");
+        console.log("4. Editar tarea (To-Do)"); // Aún no implementado en el menú
+        console.log("5. Eliminar tarea");
+        console.log("6. Ver Estadísticas (To-Do)"); // Aún no implementado en el menú
+        console.log("0. Salir");
+        console.log("----------------------------------------");
+
+        const opcion = input("Elija una opción: ");
+
+        switch (opcion) {
+            case '1':
+                const todas = gestor.obtenerTodasLasTareas();
+                mostrarLista(todas);
+                pausa();
+                break;
+
+            case '2':
+                //se limpia la consola para que no este sucia, esto evita que baje el texto al escribir algo.
+                console.clear();
+                const busqueda = input("\nIngrese palabra clave: ");
+                const resultados = gestor.buscarTareasPorTitulo(busqueda);
+                mostrarLista(resultados);
+                pausa();
+                break;
+
+            case '3':
+                console.log("\n--- NUEVA TAREA ---");
+                const titulo = input("Título (Obligatorio): ");
+                if (!titulo) {
+                    console.log("! El título no puede estar vacío.");
+                } else {
+                    const desc = input("Descripción: ");
+                    console.log("Dificultad: 1.Fácil | 2.Medio | 3.Difícil");
+                    const difInput = input("Elija (1-3): ");
+                    
+                    // Mapeo simple de entrada a Tipo
+                    let dif: any = 'Fácil';
+                    if (difInput === '2') dif = 'Medio';
+                    if (difInput === '3') dif = 'Difícil';
+
+                    gestor.agregarTarea(titulo, desc, dif);
+                    console.log(" Tarea guardada con éxito.");
+                }
+                pausa();
+                break;
+
+            case '4':
+                console.log("\n(Funcionalidad de Edición en construcción...)");
+                pausa();
+                break;
+
+            case '5':
+                //To-do: cambiar la forma de eliminar sin ingresar todo el id
+                const idEliminar = input("\nIngrese el ID de la tarea a eliminar: ");
+                const exito = gestor.eliminarTarea(idEliminar);
+                if (exito) console.log(" Tarea eliminada (Soft Delete).");
+                else console.log(" No se encontró la tarea.");
+                pausa();
+                break;
+            
+            case '6':
+                console.log("\n(Módulo de Estadísticas pendiente de implementación...)");
+                pausa();
+                break;
+
+            case '0':
+                salir = true;
+                console.log("\n¡Hasta luego! Guardando datos...");
+                break;
+
+            default:
+                console.log("Opción no válida.");
+                pausa();
+                break;
+        }
+    }
+}
+
+main();

@@ -7,5 +7,14 @@
     "dificultad": "Medio",
     "fechaCreacion": "2025-11-27T05:53:58.904Z",
     "ultimaEdicion": "2025-11-27T05:53:58.904Z"
+  },
+  {
+    "id": "b40ff8f0-0dbd-44fa-b0e2-3e5318e35d45",
+    "titulo": "Prueba de Main",
+    "descripcion": "estoy probando el main con su menu y sus metodos",
+    "estado": "Pendiente",
+    "dificultad": "Fácil",
+    "fechaCreacion": "2025-11-29T02:48:32.869Z",
+    "ultimaEdicion": "2025-11-29T02:48:32.869Z"
   }
 ]
