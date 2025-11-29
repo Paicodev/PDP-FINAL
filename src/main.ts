@@ -1,19 +1,22 @@
 import { GestorTareas } from './controllers/GestorTareas';
 import { PersistenciaJSON } from './services/PersistenciaJSON';
+import { PersistenciaSQL } from './services/PersistenciaSQL';
 
 console.log("--- INICIO DE PRUEBA ---");
 
 //guardamos la estrategia en una instancia de la clase PersistenciaJSON
 const estrategiaJSON = new PersistenciaJSON();
+const estrategiaSQL = new PersistenciaSQL();
 
 // Iniciamos el gestor con la estrategia de persistencia deseada
-const gestor = new GestorTareas(estrategiaJSON);
+//const gestor = new GestorTareas(estrategiaJSON);//
+const gestor = new GestorTareas(estrategiaSQL);
 
 console.log(`Tareas iniciales: ${gestor.obtenerTodasLasTareas().length}`);
 
 // Agregamos una tarea
 console.log("Agregando tarea de prueba...");
-const tarea = gestor.agregarTarea("Prueba JSON", "Verificando si guarda", "Medio");
+const tarea = gestor.agregarTarea("Prueba sql", "Verificando si guarda", "Medio");
 console.log(`Tarea creada con ID: ${tarea.getId()}`);
 
 // Verificamos si tiene métodos (Si esto falla, la clase Tarea está mal)

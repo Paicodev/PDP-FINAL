@@ -1,30 +1,25 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const gestorTareas_1 = require("./gestorTareas");
-const PersistenciaJSON_1 = require("./PersistenciaJSON");
+const GestorTareas_1 = require("./controllers/GestorTareas");
+const PersistenciaJSON_1 = require("./services/PersistenciaJSON");
+const PersistenciaSQL_1 = require("./services/PersistenciaSQL");
 console.log("--- INICIO DE PRUEBA ---");
-// 1. Configuramos la estrategia
+//guardamos la estrategia en una instancia de la clase PersistenciaJSON
 const estrategiaJSON = new PersistenciaJSON_1.PersistenciaJSON();
-// 2. Iniciamos el gestor
-const gestor = new gestorTareas_1.gestorTareas(estrategiaJSON);
+const estrategiaSQL = new PersistenciaSQL_1.PersistenciaSQL();
+// Iniciamos el gestor con la estrategia de persistencia deseada
+//const gestor = new GestorTareas(estrategiaJSON);//
+const gestor = new GestorTareas_1.GestorTareas(estrategiaSQL);
 console.log(`Tareas iniciales: ${gestor.obtenerTodasLasTareas().length}`);
-// 3. Agregamos una tarea
+// Agregamos una tarea
 console.log("Agregando tarea de prueba...");
-const tarea = gestor.agregarTarea("Prueba JSON", "Verificando si guarda", "Medio");
+const tarea = gestor.agregarTarea("Prueba sql", "Verificando si guarda", "Medio");
 console.log(`Tarea creada con ID: ${tarea.getId()}`);
-// 4. Verificamos si tiene métodos (Si esto falla, la clase Tarea está mal)
+// Verificamos si tiene métodos (Si esto falla, la clase Tarea está mal)
 console.log(`Visual: ${tarea.getDificultadVisual()}`);
-// 5. SIMULACIÓN DE REINICIO
+// Simulamos un reinicio (si no tuviesemos persistencia, perderíamos todo)
 console.log("\n--- SIMULANDO REINICIO DE APP ---");
-const gestorNuevo = new gestorTareas_1.gestorTareas(estrategiaJSON);
+//creamos variable nueva de gestorTareas, para simular reinicio
+const gestorNuevo = new GestorTareas_1.GestorTareas(estrategiaJSON);
 const tareasRecuperadas = gestorNuevo.obtenerTodasLasTareas();
 console.log(`Tareas recuperadas del disco: ${tareasRecuperadas.length}`);
-// 6. Validamos que la última sea la que acabamos de crear
-const ultima = tareasRecuperadas[tareasRecuperadas.length - 1];
-if (ultima.getId() === tarea.getId()) {
-    console.log("✅ ÉXITO: La tarea persistió y se recuperó correctamente.");
-    console.log(`Datos recuperados: ${ultima.getTitulo()} - ${ultima.getDificultadVisual()}`);
-}
-else {
-    console.log("❌ ERROR: No se encontró la tarea guardada.");
-}
