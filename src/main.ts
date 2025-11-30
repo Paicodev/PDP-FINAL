@@ -1,7 +1,7 @@
-import { input } from './utils/Entradas';
-import { GestorTareas } from './controllers/GestorTareas';
-import { PersistenciaJSON } from './services/PersistenciaJSON';
-import { PersistenciaSQL } from './services/PersistenciaSQL';
+import { input } from "./utils/Entradas";
+import { GestorTareas } from "./controllers/GestorTareas";
+import { PersistenciaJSON } from "./services/PersistenciaJSON";
+import { PersistenciaSQL } from "./services/persistenciaSQL";
 import { Tarea } from './models/Tarea';
 import { IPersistencia } from './interfaces/IPersistencia';
 import * as Estadisticas from './utils/Estadisticas';
