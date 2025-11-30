@@ -4,6 +4,7 @@ import { PersistenciaJSON } from './services/PersistenciaJSON';
 import { PersistenciaSQL } from './services/PersistenciaSQL';
 import { Tarea } from './models/Tarea';
 import { IPersistencia } from './interfaces/IPersistencia';
+import * as Estadisticas from './utils/Estadisticas';
 
 //SELECCIÓN DE ESTRATEGIA 
 function configurarBaseDeDatos(): GestorTareas{
@@ -78,7 +79,7 @@ function EliminarTarea(gestor: GestorTareas) {
     if (activas.length === 0) {
         console.log("No hay tareas disponibles para eliminar.");
         return; 
-
+    }
     // Mostramos las opciones para eliminar
     mostrarLista(activas);
     console.log("0. Cancelar");
@@ -104,8 +105,52 @@ function EliminarTarea(gestor: GestorTareas) {
     } else {
         console.log("Opción inválida: El número ingresado no existe.");
     }
+
 }
+
+function VerPanel(gestor: GestorTareas) {
+    console.clear();
+    console.log("\n========================================");
+    console.log("--- ESTADÍSTICAS DEL SISTEMA ---");
+
+    // cargamos todas las tareas en una variable
+    const tareas = gestor.obtenerTodasLasTareas();
+
+    // sacamos el total de tareas
+    const total = Estadisticas.obtenerTotalTareas(tareas);
+    console.log(`\n Total de Tareas: ${total}`);
+
+    // Por Estado (Iteramos el objeto Record que devuelve la función pura)
+    console.log("\n[Por Estado]");
+    const porEstado = Estadisticas.obtenerCantidadPorEstado(tareas);
+    // Object.keys nos da ["Pendiente", "Terminada", etc.]
+    if (Object.keys(porEstado).length === 0) console.log(" - Sin datos");
+    Object.keys(porEstado).forEach(estado => {
+        console.log(` - ${estado}: ${porEstado[estado]}`);
+    });
+
+    // Por Dificultad
+    console.log("\n[Por Dificultad]");
+    const porDificultad = Estadisticas.obtenerCantidadPorDificultad(tareas);
+    if (Object.keys(porDificultad).length === 0) console.log(" - Sin datos");
+    Object.keys(porDificultad).forEach(dif => {
+        console.log(` - ${dif}: ${porDificultad[dif]}`);
+    });
+
+    // Alertas (Vencidas y Prioridad Alta)
+    const vencidas = Estadisticas.obtenerTareasVencidas(tareas);
+    const prioridadAlta = Estadisticas.obtenerTareasPrioridadAlta(tareas);
+
+    console.log("\n[Alertas]");
+    console.log(` Vencidas: ${vencidas.length}`);
+    vencidas.forEach(t => console.log(`    -> ${t.getTitulo()} (Vencía: ${t.getFechaVencimiento()?.toLocaleDateString()})`));
+    
+    console.log(` Prioridad Alta: ${prioridadAlta.length}`);
+    prioridadAlta.forEach(t => console.log(`    -> ${t.getTitulo()}`));
+
+    console.log("\n========================================");
 }
+
 // ==========================================
 // BUCLE PRINCIPAL (Programación Estructurada)
 // ==========================================
@@ -122,7 +167,7 @@ function main() {
         console.log("3. Agregar nueva tarea");
         console.log("4. Editar tarea (To-Do)"); // Aún no implementado en el menú
         console.log("5. Eliminar tarea");
-        console.log("6. Ver Estadísticas (To-Do)"); // Aún no implementado en el menú
+        console.log("6. Ver Estadísticas");
         console.log("0. Salir");
         console.log("----------------------------------------");
 
@@ -159,7 +204,13 @@ function main() {
                     if (difInput === '2') dif = 'Medio';
                     if (difInput === '3') dif = 'Difícil';
 
-                    gestor.agregarTarea(titulo, desc, dif);
+                    // solicitamos fecha de vencimiento
+                    console.log("Fecha Vencimiento (AAAA-MM-DD) o Enter para vacio:");
+                    const fechaStr = input("Fecha: ");
+                    let fechaVenc: Date | undefined = undefined;
+                    if(fechaStr) fechaVenc = new Date(fechaStr);
+
+                    gestor.agregarTarea(titulo, desc, dif, fechaVenc);
                     console.log(" Tarea guardada con éxito.");
                 }
                 pausa();
@@ -177,7 +228,7 @@ function main() {
                 break;
             
             case '6':
-                console.log("\n(Módulo de Estadísticas pendiente de implementación...)");
+                VerPanel(gestor);
                 pausa();
                 break;
 

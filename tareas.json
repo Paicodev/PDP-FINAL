@@ -25,5 +25,25 @@
     "dificultad": "Difícil",
     "fechaCreacion": "2025-11-29T04:45:22.231Z",
     "ultimaEdicion": "2025-11-29T05:10:57.972Z"
+  },
+  {
+    "id": "8b53c802-9bb0-4e61-ba66-bec877125482",
+    "titulo": "Escuchar musica",
+    "descripcion": "armar una playlist y escuchar musica",
+    "estado": "Pendiente",
+    "dificultad": "Fácil",
+    "fechaCreacion": "2025-11-30T19:13:16.695Z",
+    "fechaVencimiento": "2025-11-23T00:00:00.000Z",
+    "ultimaEdicion": "2025-11-30T19:13:16.695Z"
+  },
+  {
+    "id": "96210990-2570-4403-8e52-c51fbf7e3c29",
+    "titulo": "Terminar el tp final",
+    "descripcion": "hacer los modulos de programacion logica y editar tareas",
+    "estado": "Pendiente",
+    "dificultad": "Difícil",
+    "fechaCreacion": "2025-11-30T19:13:52.092Z",
+    "fechaVencimiento": "2025-11-30T00:00:00.000Z",
+    "ultimaEdicion": "2025-11-30T19:13:52.092Z"
   }
 ]
