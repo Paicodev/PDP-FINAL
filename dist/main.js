@@ -1,9 +1,43 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 const Entradas_1 = require("./utils/Entradas");
 const GestorTareas_1 = require("./controllers/GestorTareas");
 const PersistenciaJSON_1 = require("./services/PersistenciaJSON");
 const PersistenciaSQL_1 = require("./services/PersistenciaSQL");
+const Estadisticas = __importStar(require("./utils/Estadisticas"));
 //SELECCIÓN DE ESTRATEGIA 
 function configurarBaseDeDatos() {
     let opcion = '';
@@ -59,13 +93,83 @@ function pausa() {
     (0, Entradas_1.input)("\nPresiona ENTER para continuar...");
 }
 // ==========================================
-// 3. BUCLE PRINCIPAL (Programación Estructurada)
+// Eliminar Tarea - Funcion extraida para evitar callback hell
+// ==========================================
+function EliminarTarea(gestor) {
+    console.clear();
+    console.log("--- ELIMINAR TAREA ---");
+    // Obtenemos las tareas activas
+    const activas = gestor.obtenerTareasActivas();
+    if (activas.length === 0) {
+        console.log("No hay tareas disponibles para eliminar.");
+        return;
+    }
+    // Mostramos las opciones para eliminar
+    mostrarLista(activas);
+    console.log("0. Cancelar");
+    // guardamos la selección
+    const borrar = (0, Entradas_1.input)("\nIngrese el NÚMERO de la tarea a eliminar: ");
+    // cancelación
+    if (borrar === '0') {
+        console.log("Operación cancelada.");
+        return;
+    }
+    // validamos la entrada al valor correspondiente
+    const indice = parseInt(borrar) - 1;
+    if (indice >= 0 && indice < activas.length) {
+        // eliminamos la tarea seleccionada
+        const tarea = activas[indice];
+        gestor.eliminarTarea(tarea.getId());
+        console.log(`Tarea "${tarea.getTitulo()}" eliminada correctamente.`);
+    }
+    else {
+        console.log("Opción inválida: El número ingresado no existe.");
+    }
+}
+function VerPanel(gestor) {
+    console.clear();
+    console.log("\n========================================");
+    console.log("--- ESTADÍSTICAS DEL SISTEMA ---");
+    // cargamos todas las tareas en una variable
+    const tareas = gestor.obtenerTodasLasTareas();
+    // sacamos el total de tareas
+    const total = Estadisticas.obtenerTotalTareas(tareas);
+    console.log(`\n Total de Tareas: ${total}`);
+    // Por Estado (Iteramos el objeto Record que devuelve la función pura)
+    console.log("\n[Por Estado]");
+    const porEstado = Estadisticas.obtenerCantidadPorEstado(tareas);
+    // Object.keys nos da ["Pendiente", "Terminada", etc.]
+    if (Object.keys(porEstado).length === 0)
+        console.log(" - Sin datos");
+    Object.keys(porEstado).forEach(estado => {
+        console.log(` - ${estado}: ${porEstado[estado]}`);
+    });
+    // Por Dificultad
+    console.log("\n[Por Dificultad]");
+    const porDificultad = Estadisticas.obtenerCantidadPorDificultad(tareas);
+    if (Object.keys(porDificultad).length === 0)
+        console.log(" - Sin datos");
+    Object.keys(porDificultad).forEach(dif => {
+        console.log(` - ${dif}: ${porDificultad[dif]}`);
+    });
+    // Alertas (Vencidas y Prioridad Alta)
+    const vencidas = Estadisticas.obtenerTareasVencidas(tareas);
+    const prioridadAlta = Estadisticas.obtenerTareasPrioridadAlta(tareas);
+    console.log("\n[Alertas]");
+    console.log(` Vencidas: ${vencidas.length}`);
+    vencidas.forEach(t => { var _a; return console.log(`    -> ${t.getTitulo()} (Vencía: ${(_a = t.getFechaVencimiento()) === null || _a === void 0 ? void 0 : _a.toLocaleDateString()})`); });
+    console.log(` Prioridad Alta: ${prioridadAlta.length}`);
+    prioridadAlta.forEach(t => console.log(`    -> ${t.getTitulo()}`));
+    console.log("\n========================================");
+}
+// ==========================================
+// BUCLE PRINCIPAL (Programación Estructurada)
 // ==========================================
 function main() {
-    // Paso 1: Configurar el sistema
+    //Configurar el sistema
     const gestor = configurarBaseDeDatos();
     let salir = false;
-    // Paso 2: Bucle de aplicación
+    //Bucle de aplicación
     while (!salir) {
         mostrarEncabezado();
         console.log("1. Ver todas las tareas");
@@ -107,7 +211,13 @@ function main() {
                         dif = 'Medio';
                     if (difInput === '3')
                         dif = 'Difícil';
-                    gestor.agregarTarea(titulo, desc, dif);
+                    // solicitamos fecha de vencimiento
+                    console.log("Fecha Vencimiento (AAAA-MM-DD) o Enter para vacio:");
+                    const fechaStr = (0, Entradas_1.input)("Fecha: ");
+                    let fechaVenc = undefined;
+                    if (fechaStr)
+                        fechaVenc = new Date(fechaStr);
+                    gestor.agregarTarea(titulo, desc, dif, fechaVenc);
                     console.log(" Tarea guardada con éxito.");
                 }
                 pausa();
@@ -118,33 +228,11 @@ function main() {
                 break;
             case '5':
                 console.clear();
-                console.log("--- Eliminar Tarea ---");
-                const tareasActivas = gestor.obtenerTareasActivas();
-                console.log("0- Salir");
-                if (tareasActivas.length === 0) {
-                    console.log("No hay tareas para eliminar.ra eliminar.");
-                }
-                else {
-                    mostrarLista(tareasActivas);
-                    const borrar = (0, Entradas_1.input)("\nIngrese el numero de la tarea a eliminar: ");
-                    const indiceArray = parseInt(borrar) - 1;
-                    if (borrar === '0') {
-                        console.log("Operación cancelada.");
-                    }
-                    else if (indiceArray >= 0 && indiceArray < tareasActivas.length) {
-                        const tareaABorrar = tareasActivas[indiceArray];
-                        const idReal = tareaABorrar.getId();
-                        gestor.eliminarTarea(idReal);
-                        console.log("Tarea " + tareaABorrar.getTitulo() + " eliminada (Soft Delete).");
-                    }
-                    else {
-                        console.log("Número inválido: esa tarea no existe:");
-                    }
-                }
+                EliminarTarea(gestor);
                 pausa();
                 break;
             case '6':
-                console.log("\n(Módulo de Estadísticas pendiente de implementación...)");
+                VerPanel(gestor);
                 pausa();
                 break;
             case '0':
