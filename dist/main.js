@@ -36,7 +36,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Entradas_1 = require("./utils/Entradas");
 const GestorTareas_1 = require("./controllers/GestorTareas");
 const PersistenciaJSON_1 = require("./services/PersistenciaJSON");
-const PersistenciaSQL_1 = require("./services/PersistenciaSQL");
+const persistenciaSQL_1 = require("./services/persistenciaSQL");
 const Estadisticas = __importStar(require("./utils/Estadisticas"));
 //SELECCIÓN DE ESTRATEGIA 
 function configurarBaseDeDatos() {
@@ -54,7 +54,7 @@ function configurarBaseDeDatos() {
         opcion = (0, Entradas_1.input)("Elige una opción (1-2): ");
         if (opcion === '2') {
             console.log(">> Iniciando motor SQL...");
-            estrategia = new PersistenciaSQL_1.PersistenciaSQL();
+            estrategia = new persistenciaSQL_1.PersistenciaSQL();
         }
         else if (opcion == '1') {
             console.log(">> Iniciando sistema de archivos JSON...");
@@ -177,7 +177,7 @@ function main() {
         console.log("3. Agregar nueva tarea");
         console.log("4. Editar tarea (To-Do)"); // Aún no implementado en el menú
         console.log("5. Eliminar tarea");
-        console.log("6. Ver Estadísticas (To-Do)"); // Aún no implementado en el menú
+        console.log("6. Ver Estadísticas");
         console.log("0. Salir");
         console.log("----------------------------------------");
         const opcion = (0, Entradas_1.input)("Elija una opción: ");
