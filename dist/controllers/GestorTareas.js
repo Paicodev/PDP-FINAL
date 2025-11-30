@@ -45,7 +45,7 @@ class GestorTareas {
      * (PF: Usamos .filter() para una consulta pura sobre la lista)
      */
     obtenerTareasActivas() {
-        return this.tareas.filter(tarea => tarea.getEstado() !== 'Cancelada'); // Asumo que Tarea.ts tiene getEstado()
+        return this.tareas.filter(tarea => tarea.getEstado() !== 'Cancelada');
     }
     /**
      * Busca tareas cuyo título coincida parcialmente con el término dado (variable: "clave").

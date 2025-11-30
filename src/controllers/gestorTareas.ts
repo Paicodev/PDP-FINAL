@@ -60,7 +60,7 @@ export class GestorTareas {
      * (PF: Usamos .filter() para una consulta pura sobre la lista)
      */
     public obtenerTareasActivas(): Tarea[] {
-        return this.tareas.filter(tarea => tarea.getEstado() !== 'Cancelada'); // Asumo que Tarea.ts tiene getEstado()
+        return this.tareas.filter(tarea => tarea.getEstado() !== 'Cancelada'); 
     }
 
     /**

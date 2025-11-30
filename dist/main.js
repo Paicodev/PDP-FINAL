@@ -126,6 +126,62 @@ function EliminarTarea(gestor) {
         console.log("Opción inválida: El número ingresado no existe.");
     }
 }
+function EditarTarea(gestor) {
+    console.clear();
+    console.log("--- EDITAR TAREA ---");
+    // Mostrar opciones
+    const activas = gestor.obtenerTareasActivas();
+    if (activas.length === 0) {
+        console.log("No hay tareas para editar.");
+        return;
+    }
+    mostrarLista(activas);
+    console.log("0. Cancelar");
+    // Seleccion de ID
+    const idSeleccion = (0, Entradas_1.input)("\nIngrese el Número de la tarea a editar:\n");
+    if (idSeleccion === '0' || idSeleccion.trim() === '' || isNaN(Number(idSeleccion))) {
+        return;
+    }
+    const indice = parseInt(idSeleccion) - 1;
+    if (indice < 0 || indice >= activas.length) {
+        console.log("Opción inválida, el número ingresado no existe.");
+        return;
+    }
+    const tarea = activas[indice];
+    console.log("\n Editando: " + tarea.getTitulo());
+    console.log("(Deja vacio y presiona ENTER para mantener el valor actual)");
+    // el operador || nos permite mantener el valor actual si no se ingresa nada nuevo. Porque input devuelve string siempre.
+    const nuevoTitulo = (0, Entradas_1.input)("Titulo: " + tarea.getTitulo()) || tarea.getTitulo();
+    const nuevaDesc = (0, Entradas_1.input)("Descripción: " + tarea.getDescripcion()) || tarea.getDescripcion();
+    console.log("Dificultad actual: " + tarea.getDificultad());
+    console.log("1- Facil | 2- Medio | 3. Dificil (Enter para mantener)");
+    const difInput = (0, Entradas_1.input)("Elige: ");
+    let nuevaDificultad = tarea.getDificultad();
+    if (difInput === '1') {
+        nuevaDificultad = 'Fácil';
+    }
+    if (difInput === '2') {
+        nuevaDificultad = 'Medio';
+    }
+    if (difInput === '3') {
+        nuevaDificultad = 'Difícil';
+    }
+    console.log("Estado actual: " + tarea.getEstado());
+    console.log("1- Facil | 2- Medio | 3. Dificil (Enter para mantener)");
+    const difEst = (0, Entradas_1.input)("Elige: ");
+    let nuevoEstado = tarea.getEstado();
+    if (difEst === '1') {
+        nuevoEstado = 'Pendiente';
+    }
+    if (difEst === '2') {
+        nuevoEstado = 'En Curso';
+    }
+    if (difEst === '3') {
+        nuevoEstado = 'Terminada';
+    }
+    gestor.actualizarTarea(tarea.getId(), nuevoTitulo, nuevaDesc, nuevaDificultad, nuevoEstado, tarea.getFechaVencimiento());
+    console.log("Tarea creada correctamente.");
+}
 function VerPanel(gestor) {
     console.clear();
     console.log("\n========================================");
@@ -175,9 +231,9 @@ function main() {
         console.log("1. Ver todas las tareas");
         console.log("2. Buscar tarea por título");
         console.log("3. Agregar nueva tarea");
-        console.log("4. Editar tarea (To-Do)"); // Aún no implementado en el menú
+        console.log("4. Editar tarea");
         console.log("5. Eliminar tarea");
-        console.log("6. Ver Estadísticas (To-Do)"); // Aún no implementado en el menú
+        console.log("6. Ver Estadísticas");
         console.log("0. Salir");
         console.log("----------------------------------------");
         const opcion = (0, Entradas_1.input)("Elija una opción: ");
@@ -223,7 +279,7 @@ function main() {
                 pausa();
                 break;
             case '4':
-                console.log("\n(Funcionalidad de Edición en construcción...)");
+                EditarTarea(gestor);
                 pausa();
                 break;
             case '5':
