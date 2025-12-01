@@ -58,9 +58,17 @@ function mostrarLista(tareas) {
     }
     console.log("\n--- LISTADO DE TAREAS ---");
     tareas.forEach((t, i) => {
+        var _a;
         // Usamos los getters de la clase Tarea
         console.log(`${i + 1}. [${t.getEstado()}] ${t.getTitulo()} ${t.getDificultadVisual()}`);
         console.log(`   ID: ${t.getId()}`); // Mostramos ID para operaciones
+        // Usamos toLocaleDateString() para que se lea "dd/mm/aaaa"
+        const creacion = t.getFechaCreacion().toLocaleDateString();
+        // Usamos un operador ternario: Si tiene fecha ? se muestra : imprime "Sin vencimiento"
+        const vencimiento = t.getFechaVencimiento()
+            ? (_a = t.getFechaVencimiento()) === null || _a === void 0 ? void 0 : _a.toLocaleDateString()
+            : "Sin vencimiento";
+        console.log(`   Creada: ${creacion} | Vence: ${vencimiento}`);
         if (t.getDescripcion())
             console.log(`   Desc: ${t.getDescripcion()}`);
     });

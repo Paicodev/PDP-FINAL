@@ -23,6 +23,15 @@ export function mostrarLista(tareas: Tarea[]) {
         // Usamos los getters de la clase Tarea
         console.log(`${i + 1}. [${t.getEstado()}] ${t.getTitulo()} ${t.getDificultadVisual()}`);
         console.log(`   ID: ${t.getId()}`); // Mostramos ID para operaciones
+
+        // Usamos toLocaleDateString() para que se lea "dd/mm/aaaa"
+        const creacion = t.getFechaCreacion().toLocaleDateString();
+        // Usamos un operador ternario: Si tiene fecha ? se muestra : imprime "Sin vencimiento"
+        const vencimiento = t.getFechaVencimiento() 
+                            ? t.getFechaVencimiento()?.toLocaleDateString() 
+                            : "Sin vencimiento";
+        console.log(`   Creada: ${creacion} | Vence: ${vencimiento}`);
+
         if (t.getDescripcion()) console.log(`   Desc: ${t.getDescripcion()}`);
     });
 }
