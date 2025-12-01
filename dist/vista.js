@@ -39,9 +39,11 @@ exports.pausa = pausa;
 exports.eliminarTarea = eliminarTarea;
 exports.editarTarea = editarTarea;
 exports.verPanel = verPanel;
-exports.VerTareasConOrden = VerTareasConOrden;
+exports.verTareasConOrden = verTareasConOrden;
+exports.obtenerSugerencias = obtenerSugerencias;
 const Entradas_1 = require("./utils/Entradas");
 const Estadisticas = __importStar(require("./utils/Estadisticas"));
+const Reglas = __importStar(require("./utils/Reglas"));
 // Lógica de Presentación (UI)
 function mostrarEncabezado() {
     console.clear();
@@ -185,18 +187,18 @@ function verPanel(gestor) {
     console.log("\n========================================");
 }
 // ==========================================
-// Ver Tareas con Ordenamiento (Uso de HOF)
+// Ver Tareas con Ordenamiento
 // ==========================================
-function VerTareasConOrden(gestor) {
+function verTareasConOrden(gestor) {
     console.clear();
     console.log("--- VER TAREAS ---");
-    // 1. Obtenemos la copia cruda
+    //Obtenemos la copia cruda
     const tareas = gestor.obtenerTodasLasTareas();
     if (tareas.length === 0) {
         console.log("(No hay tareas registradas)");
         return;
     }
-    // 2. Preguntamos criterio
+    //Preguntamos criterio
     console.log("Seleccione criterio de ordenamiento:");
     console.log("1. Por Defecto (Orden de creación)");
     console.log("2. Por Título (A-Z)");
@@ -204,8 +206,8 @@ function VerTareasConOrden(gestor) {
     console.log("4. Por Dificultad");
     console.log("5. Por Fecha de Creación");
     const criterio = (0, Entradas_1.input)("\nOpción (1-5): ");
-    let tareasOrdenadas = tareas; // Por defecto, la lista original
-    // 3. Aplicamos la función pura de Estadísticas según la opción
+    let tareasOrdenadas = tareas; //Por defecto, la lista original
+    //Aplicamos la función pura de Estadísticas según la opción
     switch (criterio) {
         case '2':
             tareasOrdenadas = Estadisticas.ordenarTareas(tareas, 'titulo');
@@ -227,7 +229,24 @@ function VerTareasConOrden(gestor) {
             console.log(">> Orden por defecto:");
             break;
     }
-    // 4. ¡Reutilizamos mostrarLista! 
-    // Le pasamos la lista ya ordenada. Ella ni se entera.
     mostrarLista(tareasOrdenadas);
+}
+function obtenerSugerencias(gestor) {
+    console.log("========================================");
+    console.log("   MOTOR DE INFERENCIA LÓGICA   ");
+    console.log("========================================");
+    console.log("Analizando hechos y reglas...");
+    // 1. Obtenemos todas las tareas (Hechos)
+    const listaHechos = gestor.obtenerTodasLasTareas();
+    // 2. Ejecutamos el motor de inferencia
+    const sugerencias = Reglas.obtenerSugerenciaLogica(listaHechos);
+    if (sugerencias.length > 0) {
+        console.log(`\n El sistema sugiere realizar estas ${sugerencias.length} tareas ahora:\n`);
+        console.log("   (Criterio: Están 'En Curso' O son 'Fáciles y Pendientes')\n");
+        mostrarLista(sugerencias);
+    }
+    else {
+        console.log("\n El motor lógico no encontró sugerencias inmediatas.");
+        console.log("   (Quizás todo es muy difícil o ya terminaste todo).");
+    }
 }

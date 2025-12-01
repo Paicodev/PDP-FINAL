@@ -1,7 +1,7 @@
 import { input } from "./utils/Entradas";
-import { GestorTareas } from "./controllers/gestorTareas";
+import { GestorTareas } from "./controllers/GestorTareas";
 import { PersistenciaJSON } from "./services/PersistenciaJSON";
-import { PersistenciaSQL } from "./services/persistenciaSQL";
+import { PersistenciaSQL } from "./services/PersistenciaSQL";
 import { IPersistencia } from './interfaces/IPersistencia';
 import * as UI from "./vista";
 
@@ -56,6 +56,7 @@ function main() {
         console.log("4. Editar tarea");
         console.log("5. Eliminar tarea");
         console.log("6. Ver Estadísticas");
+        console.log("7. Asistente IA (Lógica)");
         console.log("0. Salir");
         console.log("----------------------------------------");
 
@@ -116,6 +117,12 @@ function main() {
                 UI.verPanel(gestor);
                 UI.pausa();
                 break;
+            
+            case '7':
+            console.clear();
+            UI.obtenerSugerencias(gestor);
+            UI.pausa();
+            break;
 
             case '0':
                 salir = true;

@@ -1,7 +1,8 @@
-import { GestorTareas } from "./controllers/gestorTareas";
+import { GestorTareas } from "./controllers/GestorTareas";
 import { Tarea } from "./models/Tarea";
 import { input } from "./utils/Entradas";
 import * as Estadisticas from './utils/Estadisticas';
+import * as Reglas from './utils/Reglas';
 
 // Lógica de Presentación (UI)
 
@@ -212,4 +213,27 @@ export function verTareasConOrden(gestor: GestorTareas) {
     }
 
     mostrarLista(tareasOrdenadas);
+}
+
+export function obtenerSugerencias(gestor: GestorTareas){
+            console.log("========================================");
+            console.log("   MOTOR DE INFERENCIA LÓGICA   ");
+            console.log("========================================");
+            console.log("Analizando hechos y reglas...");
+
+            // 1. Obtenemos todas las tareas (Hechos)
+            const listaHechos = gestor.obtenerTodasLasTareas();
+
+            // 2. Ejecutamos el motor de inferencia
+            const sugerencias = Reglas.obtenerSugerenciaLogica(listaHechos);
+
+            if (sugerencias.length > 0) {
+                console.log(`\n El sistema sugiere realizar estas ${sugerencias.length} tareas ahora:\n`);
+                console.log("   (Criterio: Están 'En Curso' O son 'Fáciles y Pendientes')\n");
+
+                mostrarLista(sugerencias);
+            } else {
+                console.log("\n El motor lógico no encontró sugerencias inmediatas.");
+                console.log("   (Quizás todo es muy difícil o ya terminaste todo).");
+            }
 }

@@ -34,9 +34,9 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const Entradas_1 = require("./utils/Entradas");
-const gestorTareas_1 = require("./controllers/gestorTareas");
+const GestorTareas_1 = require("./controllers/GestorTareas");
 const PersistenciaJSON_1 = require("./services/PersistenciaJSON");
-const persistenciaSQL_1 = require("./services/persistenciaSQL");
+const PersistenciaSQL_1 = require("./services/PersistenciaSQL");
 const UI = __importStar(require("./vista"));
 //SELECCIÓN DE ESTRATEGIA 
 function configurarBaseDeDatos() {
@@ -54,7 +54,7 @@ function configurarBaseDeDatos() {
         opcion = (0, Entradas_1.input)("Elige una opción (1-2): ");
         if (opcion === '2') {
             console.log(">> Iniciando motor SQL...");
-            estrategia = new persistenciaSQL_1.PersistenciaSQL();
+            estrategia = new PersistenciaSQL_1.PersistenciaSQL();
         }
         else if (opcion == '1') {
             console.log(">> Iniciando sistema de archivos JSON...");
@@ -66,7 +66,7 @@ function configurarBaseDeDatos() {
         }
     }
     // Inyección de Dependencias: El gestor recibe la estrategia elegida
-    return new gestorTareas_1.GestorTareas(estrategia); //aqui el signo ! quiere decir que estrategia no es null.
+    return new GestorTareas_1.GestorTareas(estrategia); //aqui el signo ! quiere decir que estrategia no es null.
 }
 // ==========================================
 // BUCLE PRINCIPAL (Programación Estructurada)
@@ -84,12 +84,13 @@ function main() {
         console.log("4. Editar tarea");
         console.log("5. Eliminar tarea");
         console.log("6. Ver Estadísticas");
+        console.log("7. Asistente IA (Lógica)");
         console.log("0. Salir");
         console.log("----------------------------------------");
         const opcion = (0, Entradas_1.input)("Elija una opción: ");
         switch (opcion) {
             case '1':
-                UI.VerTareasConOrden(gestor); // <--- Cambio aquí
+                UI.verTareasConOrden(gestor); // <--- Cambio aquí
                 UI.pausa();
                 break;
             case '2':
@@ -136,6 +137,11 @@ function main() {
                 break;
             case '6':
                 UI.verPanel(gestor);
+                UI.pausa();
+                break;
+            case '7':
+                console.clear();
+                UI.obtenerSugerencias(gestor);
                 UI.pausa();
                 break;
             case '0':
