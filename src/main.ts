@@ -63,9 +63,8 @@ function main() {
 
         switch (opcion) {
             case '1':
-                const todas = gestor.obtenerTodasLasTareas();
-                mostrarLista(todas);
-                pausa();
+                UI.verTareasConOrden(gestor); // <--- Cambio aquí
+                UI.pausa();
                 break;
 
             case '2':

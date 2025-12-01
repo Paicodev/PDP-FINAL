@@ -160,3 +160,56 @@ export function verPanel(gestor: GestorTareas) {
 
     console.log("\n========================================");
 }
+
+// ==========================================
+// Ver Tareas con Ordenamiento
+// ==========================================
+export function verTareasConOrden(gestor: GestorTareas) {
+    console.clear();
+    console.log("--- VER TAREAS ---");
+
+    //Obtenemos la copia cruda
+    const tareas = gestor.obtenerTodasLasTareas();
+
+    if (tareas.length === 0) {
+        console.log("(No hay tareas registradas)");
+        return;
+    }
+
+    //Preguntamos criterio
+    console.log("Seleccione criterio de ordenamiento:");
+    console.log("1. Por Defecto (Orden de creación)");
+    console.log("2. Por Título (A-Z)");
+    console.log("3. Por Fecha de Vencimiento");
+    console.log("4. Por Dificultad");
+    console.log("5. Por Fecha de Creación");
+
+    const criterio = input("\nOpción (1-5): ");
+
+    let tareasOrdenadas = tareas; //Por defecto, la lista original
+
+    //Aplicamos la función pura de Estadísticas según la opción
+    switch (criterio) {
+        case '2':
+            tareasOrdenadas = Estadisticas.ordenarTareas(tareas, 'titulo');
+            console.log(">> Ordenado por Título:");
+            break;
+        case '3':
+            tareasOrdenadas = Estadisticas.ordenarTareas(tareas, 'vencimiento');
+            console.log(">> Ordenado por Vencimiento:");
+            break;
+        case '4':
+            tareasOrdenadas = Estadisticas.ordenarTareas(tareas, 'dificultad');
+            console.log(">> Ordenado por Dificultad:");
+            break;
+        case '5':
+            tareasOrdenadas = Estadisticas.ordenarTareas(tareas, 'creacion');
+            console.log(">> Ordenado por Creación:");
+            break;
+        default:
+            console.log(">> Orden por defecto:");
+            break;
+    }
+
+    mostrarLista(tareasOrdenadas);
+}
