@@ -14,10 +14,10 @@ markmap:
     - **Opciones del Menú (`switch`)**
       - `1. Ver todas`: `gestor.obtenerTodasLasTareas()`
       - `2. Buscar`: `gestor.buscarTareasPorTitulo()`
-      - `3. Agregar`: Pide datos y llama a `gestor.agregarTarea()`
-      - `4. Editar`: (Pendiente)
-      - `5. Eliminar`: Llama a la función `EliminarTarea()`
-      - `6. Estadísticas`: (Pendiente)
+      - `3. Agregar`: Llama a `agregarNuevaTarea(gestor)`
+      - `4. Editar`: Llama a `editarTarea(gestor)`
+      - `5. Eliminar`: Llama a `eliminarTarea(gestor)`
+      - `6. Estadísticas`: Llama a `verPanel(gestor)`
       - `0. Salir`: Termina el bucle.
 - **Función `configurarBaseDeDatos()`**
   - **Selección de Estrategia (Patrón Strategy)**
@@ -26,14 +26,6 @@ markmap:
       - `2. SQL` -> `new PersistenciaSQL()`
   - **Inyección de Dependencias**
     - Crea y devuelve `new GestorTareas(estrategia)`.
-- **Funciones de Interfaz de Usuario (UI)**
-  - `mostrarEncabezado()`: Muestra el título de la app.
-  - `mostrarLista(tareas)`: Itera y muestra las tareas.
-  - `pausa()`: Espera que el usuario presione ENTER.
-- **Función `EliminarTarea(gestor)`**
-  - Obtiene y muestra las tareas con `gestor.obtenerTareasActivas()`.
-  - Pide al usuario que elija una tarea por su número.
-  - Llama a `gestor.eliminarTarea(id)`.
 
 ## `controllers/GestorTareas.ts`
 - **Clase `GestorTareas`**
@@ -45,13 +37,12 @@ markmap:
   - **Métodos**
     - `constructor(persistencia: IPersistencia)`
     - `agregarTarea()`
-    - `eliminarTarea()`
-    - `editarTarea()`
-    - `cambiarEstado()`
+    - `obtenerTareaPorId()`
     - `obtenerTodasLasTareas()`
     - `obtenerTareasActivas()`
     - `buscarTareasPorTitulo()`
-    - `obtenerEstadisticas()`
+    - `actualizarTarea()`
+    - `eliminarTarea()`
 
 ## `interfaces/IPersistencia.ts`
 - **Interfaz `IPersistencia`**
@@ -87,39 +78,44 @@ markmap:
     - `descripcion`
     - `estado`
     - `dificultad`
+    - `fechaVencimiento`
     - `fechaCreacion`
     - `ultimaEdicion`
   - **Métodos**
-    - `constructor(titulo, descripcion, dificultad)`
+    - `constructor(titulo, descripcion, dificultad, fechaVencimiento)`
+    - `static validarTitulo(titulo): void`
     - `static importarTarea(data): Tarea`
-    - `get id(): string`
-    - `get titulo(): string`
-    - `get descripcion(): string`
-    - `get estado(): string`
-    - `get dificultad(): string`
+    - `setEstado(nuevoEstado)`
+    - `setDificultad(nuevaDificultad)`
+    - `update(titulo, descripcion, ...)`
+    - `getId(): string`
+    - `getTitulo(): string`
+    - `... (otros getters)`
     - `getDificultadVisual(): string`
-    - `get fechaCreacion(): Date`
-    - `get ultimaEdicion(): Date`
-    - `editar(titulo, descripcion, dificultad, estado): void`
 
-## `utils/Entradas.ts`
-- **Función `input()`**
-  - Abstrae la lógica para capturar la entrada del usuario desde la consola.
+
+## `utils/` (Directorio de Utilidades)
+  - **`Entradas.ts`**
+    - **Función `input()`**: Abstrae la lógica para capturar la entrada del usuario desde la consola usando `prompt-sync`.
+  - **`Estadisticas.ts`**
+    - **Módulo de Funciones Puras**: Realiza cálculos sobre las tareas sin modificarlas (Inmutabilidad).
+    - **Funciones**: `obtenerTotalTareas`, `obtenerCantidadPorEstado`, `obtenerCantidadPorDificultad`, `obtenerTareasVencidas`, `ordenarTareas`, etc.
+  - **`Reglas.ts`**
+    - **Motor de Inferencia (Programación Lógica)**: Utiliza `logicjs` para aplicar reglas y deducir sugerencias de tareas.
+
 
 ## `vista.ts` (Capa de Presentación)
-- **Funciones de Interfaz de Usuario (UI)**
-  - `mostrarEncabezado()`: Muestra el título de la app.
-  - `mostrarLista(tareas)`: Itera y muestra las tareas.
-  - `pausa()`: Espera que el usuario presione ENTER.
-  - `eliminarTarea(gestor)`: Lógica de UI para eliminar una tarea.
-  - `editarTarea(gestor)`: Lógica de UI para editar una tarea.
-  - `agregarNuevaTarea(gestor)`: Lógica de UI para agregar una tarea.
-  - `verPanel(gestor)`: Muestra el panel de estadísticas.
-  - `verTareasConOrden(gestor)`: Muestra tareas con opciones de ordenamiento.
-  - `solicitarEstrategiaPersistencia()`: Pide al usuario la estrategia de persistencia.
-  - `obtenerSugerencias(gestor)`: Muestra sugerencias del motor de inferencia.
-
-
+  - **Funciones de Interfaz de Usuario (UI)**
+    - `mostrarEncabezado()`: Muestra el título de la app.
+    - `mostrarLista(tareas)`: Itera y muestra las tareas.
+    - `pausa()`: Espera que el usuario presione ENTER.
+    - `eliminarTarea(gestor)`: Lógica de UI para eliminar una tarea.
+    - `editarTarea(gestor)`: Lógica de UI para editar una tarea.
+    - `agregarNuevaTarea(gestor)`: Lógica de UI para agregar una tarea.
+    - `verPanel(gestor)`: Muestra el panel de estadísticas.
+    - `verTareasConOrden(gestor)`: Muestra tareas con opciones de ordenamiento.
+    - `solicitarEstrategiaPersistencia()`: Pide al usuario la estrategia de persistencia.
+    - `obtenerSugerencias(gestor)`: Muestra sugerencias del motor de inferencia.
 
 # 🏛️ Explicación Detallada de la Arquitectura
 
@@ -129,20 +125,16 @@ markmap:
 - **Función `main()`**
   - Llama a `configurarBaseDeDatos()` al inicio.
   - **Bucle `while (true)`**: Mantiene la app corriendo.
-  - **Menú de Opciones (`switch`)**: Ejecuta acciones según la elección del usuario.
-    - Casos 1-6: Invocan métodos del `gestor` o funciones auxiliares.
-    - Caso 0: Termina la aplicación.
+  - **Menú de Opciones (`switch`)**: Delega la lógica de UI a funciones de la capa de presentación (`vista.ts`).
 - **Función `configurarBaseDeDatos()`**
   - **Patrón Strategy**: Usuario elige método de almacenamiento (JSON/SQL).
   - Crea la instancia de persistencia (`PersistenciaJSON` o `PersistenciaSQL`).
   - **Inyección de Dependencias**: Crea `GestorTareas` inyectándole la estrategia.
-- **Funciones de UI y Auxiliares**
-  - `mostrarEncabezado`, `mostrarLista`, `pausa`: Mejoran la UI de la consola.
-  - `EliminarTarea(gestor)`: Abstrae la lógica para borrar una tarea.
 
 ## 2. `controllers/GestorTareas.ts` - El Orquestador
 - Cerebro de la lógica de negocio.
 - Intermediario entre UI (`main.ts`) y capa de datos (`IPersistencia`).
+- No contiene lógica de presentación (consola), solo gestiona los datos.
 - **Constructor**
   - Recibe un objeto `IPersistencia`.
   - Carga las tareas iniciales usando `persistencia.cargar()`.
@@ -150,7 +142,7 @@ markmap:
   - `private tareas: Tarea[]`: Listado de tareas en memoria.
   - `private persistencia: IPersistencia`: Estrategia de almacenamiento (JSON/SQL).
 - **Métodos de Modificación**
-  - `agregarTarea`, `eliminarTarea`, `editarTarea`:
+  - `agregarTarea`, `eliminarTarea`, `actualizarTarea`:
     - Modifican el array `this.tareas`.
     - Llaman a `persistencia.guardar()` para persistir los cambios.
 - **Métodos de Consulta**
@@ -178,13 +170,14 @@ markmap:
 
 ## 5. `models/Tarea.ts` - El Molde de los Datos
 - Define la estructura y comportamiento de una `Tarea`.
-- **Atributos**: `id`, `titulo`, `descripcion`, etc. Son privados para encapsular los datos.
+- **Atributos**: `id`, `titulo`, `descripcion`, `fechaVencimiento`, etc. Son privados para encapsular los datos.
 - **Constructor**: Crea una nueva tarea, asignando `id` único y fechas.
-- **Getters**: Permiten acceso controlado de solo lectura a los atributos.
-- **`editar()`**: Único método para modificar una tarea. Actualiza la `ultimaEdicion`.
+- **Getters y Setters**: Permiten acceso controlado a los atributos. Los setters (`setEstado`, `setDificultad`) actualizan la fecha de `ultimaEdicion`.
+- **`update()`**: Método principal para modificar una tarea. Centraliza la lógica de edición y actualiza la `ultimaEdicion`.
 - **`static importarTarea(data)`**: Método de "fábrica" para la **rehidratación**. Convierte un objeto simple (de JSON o SQL) en una instancia real de la clase `Tarea`.
+- **`static validarTitulo(titulo)`**: Método de validación que arroja un error si el título no es válido.
 
-## 6. `vista.ts` - La Capa de Presentación
+## 6. `vista.ts` - La Capa de Presentación (UI de Consola)
 - **Propósito**: Encargado de toda la lógica relacionada con la interfaz de usuario (UI) en la consola.
 - Abstrae la manera en que la información se muestra y cómo se capturan las entradas del usuario para acciones específicas.
 - **Funciones Principales**:
@@ -193,8 +186,23 @@ markmap:
   - `verPanel`, `verTareasConOrden`: Muestran vistas más complejas de los datos, como estadísticas o listas ordenadas.
   - `solicitarEstrategiaPersistencia`: Aísla la lógica para la configuración inicial.
 
-## 7. `utils/Entradas.ts` - La Utilidad de Entrada
-- Abstrae la lógica para obtener texto del usuario en la consola.
-- **Función `input()`**
-  - Usa `readline-sync` para pausar y esperar la entrada del usuario.
-  - Facilita el mantenimiento del código.
+## 7. `utils/` - El Directorio de Utilidades
+- **Propósito**: Agrupa módulos con funciones de ayuda reutilizables que no encajan en otras capas.
+
+### `Entradas.ts` - La Utilidad de Entrada
+  - Abstrae la lógica para obtener texto del usuario en la consola.
+  - **Función `input()`**: Usa `prompt-sync` para pausar y esperar la entrada del usuario, facilitando el mantenimiento del código.
+
+### `Estadisticas.ts` - El Módulo Funcional
+  - **Propósito**: Contiene un conjunto de **funciones puras** que operan sobre la lista de tareas para generar datos y estadísticas.
+  - **Inmutabilidad**: Ninguna de estas funciones modifica el array original de tareas. Crean copias o devuelven nuevos arrays filtrados u ordenados.
+  - **Funciones de Agregación**: `obtenerTotalTareas`, `obtenerCantidadPorEstado`, `obtenerCantidadPorDificultad`. Usan `reduce` para transformar la lista en un valor agregado.
+  - **Funciones de Filtrado**: `obtenerTareasVencidas`, `obtenerTareasPrioridadAlta`. Usan `filter` para devolver subconjuntos de tareas.
+  - **Funciones de Ordenamiento (HOF)**: `ordenarTareas` es una función de orden superior que recibe un criterio y devuelve una **copia ordenada** de la lista de tareas.
+
+### `Reglas.ts` - El Motor de Inferencia
+  - **Propósito**: Implementa un paradigma de **programación lógica** para deducir qué tareas sugerir al usuario.
+  - **Función `obtenerSugerenciaLogica()`**:
+    - **Hechos**: Define las características de cada tarea (estado, dificultad) como hechos.
+    - **Reglas**: Establece las condiciones para que una tarea sea "sugerible" (por ejemplo, `estado = 'Pendiente' Y dificultad = 'Fácil'`).
+    - **Motor `logicjs`**: Utiliza la librería para unificar los hechos con las reglas y encontrar las tareas que satisfacen la consulta.

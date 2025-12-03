@@ -179,7 +179,7 @@ function editarTarea(gestor) {
 function agregarNuevaTarea(gestor) {
     console.log("\n--- NUEVA TAREA ---");
     const titulo = (0, Entradas_1.input)("Título (Obligatorio): ");
-    // 1. Validación de entrada
+    // Validación de entrada
     if (!titulo) {
         console.log("¡El título no puede estar vacío!");
         return; // Salimos de la función si no hay título
@@ -187,7 +187,6 @@ function agregarNuevaTarea(gestor) {
     const desc = (0, Entradas_1.input)("Descripción: ");
     console.log("Dificultad: 1. Fácil | 2. Medio | 3. Difícil");
     const difInput = (0, Entradas_1.input)("Elija (1-3): ");
-    // 2. Mapeo seguro de tipos, evitando 'any'
     let dificultad = 'Fácil'; // Valor por defecto
     if (difInput === '2')
         dificultad = 'Medio';
@@ -196,14 +195,14 @@ function agregarNuevaTarea(gestor) {
     console.log("Fecha Vencimiento (AAAA-MM-DD) o Enter para omitir:");
     const fechaStr = (0, Entradas_1.input)("Fecha: ");
     let fechaVenc = undefined;
-    // 3. Validación de la fecha
+    // Validación de la fecha
     if (fechaStr && !isNaN(new Date(fechaStr).getTime())) {
         fechaVenc = new Date(fechaStr);
     }
     else if (fechaStr) {
         console.log("Formato de fecha inválido. Se omitirá la fecha de vencimiento.");
     }
-    // 4. Llamada al gestor con los datos recolectados
+    // Llamada al gestor con los datos recolectados
     gestor.agregarTarea(titulo, desc, dificultad, fechaVenc);
     console.log("\n✅ Tarea guardada con éxito.");
 }
@@ -306,7 +305,6 @@ function solicitarEstrategiaPersistencia() {
         }
     }
     return opcion;
-    mostrarLista(tareasOrdenadas);
 }
 function obtenerSugerencias(gestor) {
     console.log("========================================");
