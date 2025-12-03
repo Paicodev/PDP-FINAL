@@ -1,5 +1,5 @@
 import { GestorTareas } from "./controllers/gestorTareas";
-import { Tarea } from "./models/Tarea";
+import { Tarea, TareaDificultad } from "./models/Tarea";
 import { input } from "./utils/Entradas";
 import * as Estadisticas from './utils/Estadisticas';
 
@@ -67,6 +67,39 @@ export function eliminarTarea(gestor: GestorTareas) {
     }
 }
 
+/**
+ * Función auxiliar para recolectar los nuevos datos de una tarea desde el usuario.
+ * Es una función pura en el sentido de que no modifica estado externo, solo recolecta y devuelve datos.
+ * @param tareaActual La tarea que se está editando.
+ * @returns Un objeto con los nuevos valores para la tarea.
+ */
+function obtenerNuevosDatosTarea(tareaActual: Tarea) {
+    console.log("Ingresa el nuevo título o presiona ENTER para mantenerlo.");
+    console.log("Título actual: " + tareaActual.getTitulo());
+    const nuevoTitulo = input('') || tareaActual.getTitulo();
+
+    console.log("Descripcion actual: " + tareaActual.getDescripcion());
+    const nuevaDesc = input('') || tareaActual.getDescripcion();
+
+    console.log("Dificultad actual: " + tareaActual.getDificultad());
+    console.log("1- Facil | 2- Medio | 3. Dificil (Enter para mantener)");
+    const difInput = input("Elige: ");
+    let nuevaDificultad = tareaActual.getDificultad();
+    if (difInput === '1') { nuevaDificultad = 'Fácil'; }
+    if (difInput === '2') { nuevaDificultad = 'Medio'; }
+    if (difInput === '3') { nuevaDificultad = 'Difícil'; }
+
+    console.log("Estado actual: " + tareaActual.getEstado());
+    console.log("1- Pendiente | 2- En Curso | 3- Terminada (Enter para mantener)");
+    const estInput = input("Elige: ");
+    let nuevoEstado = tareaActual.getEstado();
+    if (estInput === '1') { nuevoEstado = 'Pendiente'; }
+    if (estInput === '2') { nuevoEstado = 'En Curso'; }
+    if (estInput === '3') { nuevoEstado = 'Terminada'; }
+
+    return { nuevoTitulo, nuevaDesc, nuevaDificultad, nuevoEstado };
+}
+
 export function editarTarea(gestor: GestorTareas){
     console.log("--- EDITAR TAREA ---")
     // Mostrar opciones
@@ -94,35 +127,54 @@ export function editarTarea(gestor: GestorTareas){
     const tarea = activas[indice];
     console.log("Editando: "+ tarea.getTitulo());
 
-    // el operador || nos permite mantener el valor actual si no se ingresa nada nuevo. Porque input devuelve string siempre.
-    console.log("Ingresa el nuevo título o presiona ENTER para mantenerlo.");
-    console.log("Título actual: "+ tarea.getTitulo());
-    const nuevoTitulo = input('') || tarea.getTitulo();
+    // Usamos la función auxiliar para mantener esta función más limpia
+    const { nuevoTitulo, nuevaDesc, nuevaDificultad, nuevoEstado } = obtenerNuevosDatosTarea(tarea);
 
-    console.log("Descripcion actual: "+ tarea.getDescripcion());
-    const nuevaDesc = input('') || tarea.getDescripcion();
-
-    console.log("Dificultad actual: "+ tarea.getDificultad());
-    console.log("1- Facil | 2- Medio | 3. Dificil (Enter para mantener)");
-    const difInput = input("Elige: ");
-
-    let nuevaDificultad = tarea.getDificultad();
-    if (difInput === '1') {nuevaDificultad = 'Fácil';}
-    if (difInput === '2') {nuevaDificultad = 'Medio';}
-    if (difInput === '3') {nuevaDificultad = 'Difícil';}
-
-    console.log("Estado actual: "+ tarea.getEstado());
-    console.log("1- Pendiente | 2- En Curso | 3- Terminada (Enter para mantener)");
-    const difEst = input("Elige: ");
-
-    let nuevoEstado = tarea.getEstado();
-    if (difEst === '1') {nuevoEstado = 'Pendiente';}
-    if (difEst === '2') {nuevoEstado = 'En Curso';}
-    if (difEst === '3') {nuevoEstado = 'Terminada';}
-
-    gestor.actualizarTarea(tarea.getId(), nuevoTitulo, nuevaDesc, nuevaDificultad, nuevoEstado, tarea.getFechaVencimiento());
+    gestor.actualizarTarea(
+        tarea.getId(), 
+        nuevoTitulo, 
+        nuevaDesc, 
+        nuevaDificultad, 
+        nuevoEstado, 
+        tarea.getFechaVencimiento()
+    );
 
     console.log("\nTarea actualizada correctamente.");
+}
+
+export function agregarNuevaTarea(gestor: GestorTareas) {
+    console.log("\n--- NUEVA TAREA ---");
+    const titulo = input("Título (Obligatorio): ");
+    
+    // Validación de entrada
+    if (!titulo) {
+        console.log("¡El título no puede estar vacío!");
+        return; // Salimos de la función si no hay título
+    }
+
+    const desc = input("Descripción: ");
+    
+    console.log("Dificultad: 1. Fácil | 2. Medio | 3. Difícil");
+    const difInput = input("Elija (1-3): ");
+    
+    let dificultad: TareaDificultad = 'Fácil'; // Valor por defecto
+    if (difInput === '2') dificultad = 'Medio';
+    if (difInput === '3') dificultad = 'Difícil';
+
+    console.log("Fecha Vencimiento (AAAA-MM-DD) o Enter para omitir:");
+    const fechaStr = input("Fecha: ");
+    let fechaVenc: Date | undefined = undefined;
+    
+    // Validación de la fecha
+    if (fechaStr && !isNaN(new Date(fechaStr).getTime())) {
+        fechaVenc = new Date(fechaStr);
+    } else if (fechaStr) {
+        console.log("Formato de fecha inválido. Se omitirá la fecha de vencimiento.");
+    }
+
+    // Llamada al gestor con los datos recolectados
+    gestor.agregarTarea(titulo, desc, dificultad, fechaVenc);
+    console.log("\n✅ Tarea guardada con éxito.");
 }
 
 export function verPanel(gestor: GestorTareas) {
@@ -211,5 +263,34 @@ export function verTareasConOrden(gestor: GestorTareas) {
             break;
     }
 
+    //Le pasamos la lista ya ordenada.
     mostrarLista(tareasOrdenadas);
+}
+
+/**
+ * Muestra un menú para que el usuario elija la estrategia de persistencia.
+ * Valida la entrada y no retorna hasta que se elija una opción válida.
+ * @returns {string} La opción elegida por el usuario ('1' para JSON, '2' para SQL).
+ */
+export function solicitarEstrategiaPersistencia(): string {
+    let opcion = '';
+
+    while(opcion !== '1' && opcion !== '2'){
+        console.clear();
+        console.log("========================================");
+        console.log("     CONFIGURACIÓN DE ALMACENAMIENTO    ");
+        console.log("========================================");
+        console.log("Seleccione el motor de persistencia");
+        console.log("1. Archivo de Texto (JSON)");
+        console.log("2. Base de Datos Local (SQLite)");
+        console.log("========================================");
+
+        opcion = input("Elige una opción (1-2): ");
+
+        if (opcion !== '1' && opcion !== '2') {
+            console.log(" Opción inválida. Intente nuevamente.");
+            input("Presiona ENTER para reintentar...");
+        }
+    }
+    return opcion;
 }

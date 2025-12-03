@@ -40,33 +40,22 @@ const persistenciaSQL_1 = require("./services/persistenciaSQL");
 const UI = __importStar(require("./vista"));
 //SELECCIÓN DE ESTRATEGIA 
 function configurarBaseDeDatos() {
-    let opcion = '';
-    let estrategia = null;
-    while (opcion !== '1' && opcion !== '2') {
-        console.clear();
-        console.log("========================================");
-        console.log("     CONFIGURACIÓN DE ALMACENAMIENTO    ");
-        console.log("========================================");
-        console.log("Selecciones el motor de persistencia");
-        console.log("1. Archivo de Texto (JSON)");
-        console.log("2- Base de Datos Local (SQLite)");
-        console.log("========================================");
-        opcion = (0, Entradas_1.input)("Elige una opción (1-2): ");
-        if (opcion === '2') {
-            console.log(">> Iniciando motor SQL...");
-            estrategia = new persistenciaSQL_1.PersistenciaSQL();
-        }
-        else if (opcion == '1') {
-            console.log(">> Iniciando sistema de archivos JSON...");
-            estrategia = new PersistenciaJSON_1.PersistenciaJSON();
-        }
-        else {
-            console.log(" Opción inválida. Intente nuevamente.");
-            (0, Entradas_1.input)("Presiona ENTER para reintentar...");
-        }
+    // 1. La vista se encarga de solicitar la opción al usuario.
+    const opcion = UI.solicitarEstrategiaPersistencia();
+    let estrategia;
+    if (opcion === '2') {
+        console.log(">> Iniciando motor SQL...");
+        estrategia = new persistenciaSQL_1.PersistenciaSQL();
     }
-    // Inyección de Dependencias: El gestor recibe la estrategia elegida
-    return new gestorTareas_1.GestorTareas(estrategia); //aqui el signo ! quiere decir que estrategia no es null.
+    else {
+        // Por defecto o si es '1', usamos JSON.
+        console.log(">> Iniciando sistema de archivos JSON...");
+        estrategia = new PersistenciaJSON_1.PersistenciaJSON();
+    }
+    // 2. Inyección de Dependencias: El gestor recibe la estrategia elegida.
+    // Ya no es necesario el "non-null assertion" (!) porque la lógica asegura
+    // que 'estrategia' siempre tendrá un valor.
+    return new gestorTareas_1.GestorTareas(estrategia);
 }
 // ==========================================
 // BUCLE PRINCIPAL (Programación Estructurada)
@@ -89,7 +78,7 @@ function main() {
         const opcion = (0, Entradas_1.input)("Elija una opción: ");
         switch (opcion) {
             case '1':
-                UI.VerTareasConOrden(gestor); // <--- Cambio aquí
+                UI.verTareasConOrden(gestor); // <--- Cambio aquí
                 UI.pausa();
                 break;
             case '2':
@@ -100,30 +89,8 @@ function main() {
                 UI.pausa();
                 break;
             case '3':
-                console.log("\n--- NUEVA TAREA ---");
-                const titulo = (0, Entradas_1.input)("Título (Obligatorio): ");
-                if (!titulo) {
-                    console.log("! El título no puede estar vacío.");
-                }
-                else {
-                    const desc = (0, Entradas_1.input)("Descripción: ");
-                    console.log("Dificultad: 1.Fácil | 2.Medio | 3.Difícil");
-                    const difInput = (0, Entradas_1.input)("Elija (1-3): ");
-                    // Mapeo simple de entrada a Tipo
-                    let dif = 'Fácil';
-                    if (difInput === '2')
-                        dif = 'Medio';
-                    if (difInput === '3')
-                        dif = 'Difícil';
-                    // solicitamos fecha de vencimiento
-                    console.log("Fecha Vencimiento (AAAA-MM-DD) o Enter para vacio:");
-                    const fechaStr = (0, Entradas_1.input)("Fecha: ");
-                    let fechaVenc = undefined;
-                    if (fechaStr)
-                        fechaVenc = new Date(fechaStr);
-                    gestor.agregarTarea(titulo, desc, dif, fechaVenc);
-                    console.log(" Tarea guardada con éxito.");
-                }
+                // Delegamos toda la lógica de UI a su módulo correspondiente
+                UI.agregarNuevaTarea(gestor);
                 UI.pausa();
                 break;
             case '4':

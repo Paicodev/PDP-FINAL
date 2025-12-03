@@ -38,8 +38,10 @@ exports.mostrarLista = mostrarLista;
 exports.pausa = pausa;
 exports.eliminarTarea = eliminarTarea;
 exports.editarTarea = editarTarea;
+exports.agregarNuevaTarea = agregarNuevaTarea;
 exports.verPanel = verPanel;
-exports.VerTareasConOrden = VerTareasConOrden;
+exports.verTareasConOrden = verTareasConOrden;
+exports.solicitarEstrategiaPersistencia = solicitarEstrategiaPersistencia;
 const Entradas_1 = require("./utils/Entradas");
 const Estadisticas = __importStar(require("./utils/Estadisticas"));
 // Lógica de Presentación (UI)
@@ -97,6 +99,46 @@ function eliminarTarea(gestor) {
         console.log("Opción inválida: El número ingresado no existe.");
     }
 }
+/**
+ * Función auxiliar para recolectar los nuevos datos de una tarea desde el usuario.
+ * Es una función pura en el sentido de que no modifica estado externo, solo recolecta y devuelve datos.
+ * @param tareaActual La tarea que se está editando.
+ * @returns Un objeto con los nuevos valores para la tarea.
+ */
+function obtenerNuevosDatosTarea(tareaActual) {
+    console.log("Ingresa el nuevo título o presiona ENTER para mantenerlo.");
+    console.log("Título actual: " + tareaActual.getTitulo());
+    const nuevoTitulo = (0, Entradas_1.input)('') || tareaActual.getTitulo();
+    console.log("Descripcion actual: " + tareaActual.getDescripcion());
+    const nuevaDesc = (0, Entradas_1.input)('') || tareaActual.getDescripcion();
+    console.log("Dificultad actual: " + tareaActual.getDificultad());
+    console.log("1- Facil | 2- Medio | 3. Dificil (Enter para mantener)");
+    const difInput = (0, Entradas_1.input)("Elige: ");
+    let nuevaDificultad = tareaActual.getDificultad();
+    if (difInput === '1') {
+        nuevaDificultad = 'Fácil';
+    }
+    if (difInput === '2') {
+        nuevaDificultad = 'Medio';
+    }
+    if (difInput === '3') {
+        nuevaDificultad = 'Difícil';
+    }
+    console.log("Estado actual: " + tareaActual.getEstado());
+    console.log("1- Pendiente | 2- En Curso | 3- Terminada (Enter para mantener)");
+    const estInput = (0, Entradas_1.input)("Elige: ");
+    let nuevoEstado = tareaActual.getEstado();
+    if (estInput === '1') {
+        nuevoEstado = 'Pendiente';
+    }
+    if (estInput === '2') {
+        nuevoEstado = 'En Curso';
+    }
+    if (estInput === '3') {
+        nuevoEstado = 'Terminada';
+    }
+    return { nuevoTitulo, nuevaDesc, nuevaDificultad, nuevoEstado };
+}
 function editarTarea(gestor) {
     console.log("--- EDITAR TAREA ---");
     // Mostrar opciones
@@ -119,40 +161,41 @@ function editarTarea(gestor) {
     }
     const tarea = activas[indice];
     console.log("Editando: " + tarea.getTitulo());
-    // el operador || nos permite mantener el valor actual si no se ingresa nada nuevo. Porque input devuelve string siempre.
-    console.log("Ingresa el nuevo título o presiona ENTER para mantenerlo.");
-    console.log("Título actual: " + tarea.getTitulo());
-    const nuevoTitulo = (0, Entradas_1.input)('') || tarea.getTitulo();
-    console.log("Descripcion actual: " + tarea.getDescripcion());
-    const nuevaDesc = (0, Entradas_1.input)('') || tarea.getDescripcion();
-    console.log("Dificultad actual: " + tarea.getDificultad());
-    console.log("1- Facil | 2- Medio | 3. Dificil (Enter para mantener)");
-    const difInput = (0, Entradas_1.input)("Elige: ");
-    let nuevaDificultad = tarea.getDificultad();
-    if (difInput === '1') {
-        nuevaDificultad = 'Fácil';
-    }
-    if (difInput === '2') {
-        nuevaDificultad = 'Medio';
-    }
-    if (difInput === '3') {
-        nuevaDificultad = 'Difícil';
-    }
-    console.log("Estado actual: " + tarea.getEstado());
-    console.log("1- Pendiente | 2- En Curso | 3- Terminada (Enter para mantener)");
-    const difEst = (0, Entradas_1.input)("Elige: ");
-    let nuevoEstado = tarea.getEstado();
-    if (difEst === '1') {
-        nuevoEstado = 'Pendiente';
-    }
-    if (difEst === '2') {
-        nuevoEstado = 'En Curso';
-    }
-    if (difEst === '3') {
-        nuevoEstado = 'Terminada';
-    }
+    // Usamos la función auxiliar para mantener esta función más limpia
+    const { nuevoTitulo, nuevaDesc, nuevaDificultad, nuevoEstado } = obtenerNuevosDatosTarea(tarea);
     gestor.actualizarTarea(tarea.getId(), nuevoTitulo, nuevaDesc, nuevaDificultad, nuevoEstado, tarea.getFechaVencimiento());
     console.log("\nTarea actualizada correctamente.");
+}
+function agregarNuevaTarea(gestor) {
+    console.log("\n--- NUEVA TAREA ---");
+    const titulo = (0, Entradas_1.input)("Título (Obligatorio): ");
+    // 1. Validación de entrada
+    if (!titulo) {
+        console.log("¡El título no puede estar vacío!");
+        return; // Salimos de la función si no hay título
+    }
+    const desc = (0, Entradas_1.input)("Descripción: ");
+    console.log("Dificultad: 1. Fácil | 2. Medio | 3. Difícil");
+    const difInput = (0, Entradas_1.input)("Elija (1-3): ");
+    // 2. Mapeo seguro de tipos, evitando 'any'
+    let dificultad = 'Fácil'; // Valor por defecto
+    if (difInput === '2')
+        dificultad = 'Medio';
+    if (difInput === '3')
+        dificultad = 'Difícil';
+    console.log("Fecha Vencimiento (AAAA-MM-DD) o Enter para omitir:");
+    const fechaStr = (0, Entradas_1.input)("Fecha: ");
+    let fechaVenc = undefined;
+    // 3. Validación de la fecha
+    if (fechaStr && !isNaN(new Date(fechaStr).getTime())) {
+        fechaVenc = new Date(fechaStr);
+    }
+    else if (fechaStr) {
+        console.log("Formato de fecha inválido. Se omitirá la fecha de vencimiento.");
+    }
+    // 4. Llamada al gestor con los datos recolectados
+    gestor.agregarTarea(titulo, desc, dificultad, fechaVenc);
+    console.log("\n✅ Tarea guardada con éxito.");
 }
 function verPanel(gestor) {
     console.clear();
@@ -185,18 +228,18 @@ function verPanel(gestor) {
     console.log("\n========================================");
 }
 // ==========================================
-// Ver Tareas con Ordenamiento (Uso de HOF)
+// Ver Tareas con Ordenamiento
 // ==========================================
-function VerTareasConOrden(gestor) {
+function verTareasConOrden(gestor) {
     console.clear();
     console.log("--- VER TAREAS ---");
-    // 1. Obtenemos la copia cruda
+    //Obtenemos la copia cruda
     const tareas = gestor.obtenerTodasLasTareas();
     if (tareas.length === 0) {
         console.log("(No hay tareas registradas)");
         return;
     }
-    // 2. Preguntamos criterio
+    //Preguntamos criterio
     console.log("Seleccione criterio de ordenamiento:");
     console.log("1. Por Defecto (Orden de creación)");
     console.log("2. Por Título (A-Z)");
@@ -204,8 +247,8 @@ function VerTareasConOrden(gestor) {
     console.log("4. Por Dificultad");
     console.log("5. Por Fecha de Creación");
     const criterio = (0, Entradas_1.input)("\nOpción (1-5): ");
-    let tareasOrdenadas = tareas; // Por defecto, la lista original
-    // 3. Aplicamos la función pura de Estadísticas según la opción
+    let tareasOrdenadas = tareas; //Por defecto, la lista original
+    //Aplicamos la función pura de Estadísticas según la opción
     switch (criterio) {
         case '2':
             tareasOrdenadas = Estadisticas.ordenarTareas(tareas, 'titulo');
@@ -227,7 +270,30 @@ function VerTareasConOrden(gestor) {
             console.log(">> Orden por defecto:");
             break;
     }
-    // 4. ¡Reutilizamos mostrarLista! 
-    // Le pasamos la lista ya ordenada. Ella ni se entera.
+    //Le pasamos la lista ya ordenada.
     mostrarLista(tareasOrdenadas);
+}
+/**
+ * Muestra un menú para que el usuario elija la estrategia de persistencia.
+ * Valida la entrada y no retorna hasta que se elija una opción válida.
+ * @returns {string} La opción elegida por el usuario ('1' para JSON, '2' para SQL).
+ */
+function solicitarEstrategiaPersistencia() {
+    let opcion = '';
+    while (opcion !== '1' && opcion !== '2') {
+        console.clear();
+        console.log("========================================");
+        console.log("     CONFIGURACIÓN DE ALMACENAMIENTO    ");
+        console.log("========================================");
+        console.log("Seleccione el motor de persistencia");
+        console.log("1. Archivo de Texto (JSON)");
+        console.log("2. Base de Datos Local (SQLite)");
+        console.log("========================================");
+        opcion = (0, Entradas_1.input)("Elige una opción (1-2): ");
+        if (opcion !== '1' && opcion !== '2') {
+            console.log(" Opción inválida. Intente nuevamente.");
+            (0, Entradas_1.input)("Presiona ENTER para reintentar...");
+        }
+    }
+    return opcion;
 }

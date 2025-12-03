@@ -7,41 +7,25 @@ import * as UI from "./vista";
 
 //SELECCIÓN DE ESTRATEGIA 
 function configurarBaseDeDatos(): GestorTareas{
-    let opcion = '';
-    let estrategia: IPersistencia | null = null;
-
-    while(opcion !== '1' && opcion !== '2'){
-        
-    console.clear();
-    console.log("========================================");
-    console.log("     CONFIGURACIÓN DE ALMACENAMIENTO    ");
-    console.log("========================================");
-    console.log("Selecciones el motor de persistencia");
-    console.log("1. Archivo de Texto (JSON)");
-    console.log("2- Base de Datos Local (SQLite)");
-    console.log("========================================");
-
-    opcion = input("Elige una opción (1-2): ");
+    // La vista se encarga de solicitar la opción al usuario.
+    const opcion = UI.solicitarEstrategiaPersistencia();
+    let estrategia: IPersistencia;
 
     if (opcion === '2') {
         console.log(">> Iniciando motor SQL...");
         estrategia = new PersistenciaSQL();
-    } else if (opcion == '1'){
+    } else {
+        // Por defecto o si es '1', usamos JSON.
         console.log(">> Iniciando sistema de archivos JSON...");
         estrategia = new PersistenciaJSON();
-    }else {
-        console.log(" Opción inválida. Intente nuevamente.");
-            input("Presiona ENTER para reintentar...");
     }
-    
-    }
-    // Inyección de Dependencias: El gestor recibe la estrategia elegida
-    return new GestorTareas(estrategia!); //aqui el signo ! quiere decir que estrategia no es null.
+
+    // El gestor recibe la estrategia elegida.
+    return new GestorTareas(estrategia);
 }
 
-// ==========================================
 // BUCLE PRINCIPAL (Programación Estructurada)
-// ==========================================
+
 function main() {
     //Configurar el sistema
     const gestor = configurarBaseDeDatos();
@@ -60,10 +44,10 @@ function main() {
         console.log("----------------------------------------");
 
         const opcion = input("Elija una opción: ");
-
+    
         switch (opcion) {
             case '1':
-                UI.verTareasConOrden(gestor); // <--- Cambio aquí
+                UI.verTareasConOrden(gestor);
                 UI.pausa();
                 break;
 
@@ -76,29 +60,8 @@ function main() {
                 break;
 
             case '3':
-                console.log("\n--- NUEVA TAREA ---");
-                const titulo = input("Título (Obligatorio): ");
-                if (!titulo) {
-                    console.log("! El título no puede estar vacío.");
-                } else {
-                    const desc = input("Descripción: ");
-                    console.log("Dificultad: 1.Fácil | 2.Medio | 3.Difícil");
-                    const difInput = input("Elija (1-3): ");
-                    
-                    // Mapeo simple de entrada a Tipo
-                    let dif: any = 'Fácil';
-                    if (difInput === '2') dif = 'Medio';
-                    if (difInput === '3') dif = 'Difícil';
-
-                    // solicitamos fecha de vencimiento
-                    console.log("Fecha Vencimiento (AAAA-MM-DD) o Enter para vacio:");
-                    const fechaStr = input("Fecha: ");
-                    let fechaVenc: Date | undefined = undefined;
-                    if(fechaStr) fechaVenc = new Date(fechaStr);
-
-                    gestor.agregarTarea(titulo, desc, dif, fechaVenc);
-                    console.log(" Tarea guardada con éxito.");
-                }
+                // Delegamos toda la lógica de UI a su módulo correspondiente
+                UI.agregarNuevaTarea(gestor);
                 UI.pausa();
                 break;
 
