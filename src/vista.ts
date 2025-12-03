@@ -303,6 +303,7 @@ export function solicitarEstrategiaPersistencia(): string {
         }
     }
     return opcion;
+}
 export function obtenerSugerencias(gestor: GestorTareas){
             console.log("========================================");
             console.log("   MOTOR DE INFERENCIA LÓGICA   ");
@@ -324,4 +325,4 @@ export function obtenerSugerencias(gestor: GestorTareas){
                 console.log("\n El motor lógico no encontró sugerencias inmediatas.");
                 console.log("   (Quizás todo es muy difícil o ya terminaste todo).");
             }
-}
+        }

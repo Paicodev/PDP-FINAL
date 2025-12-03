@@ -106,6 +106,19 @@ markmap:
 - **Función `input()`**
   - Abstrae la lógica para capturar la entrada del usuario desde la consola.
 
+## `vista.ts` (Capa de Presentación)
+- **Funciones de Interfaz de Usuario (UI)**
+  - `mostrarEncabezado()`: Muestra el título de la app.
+  - `mostrarLista(tareas)`: Itera y muestra las tareas.
+  - `pausa()`: Espera que el usuario presione ENTER.
+  - `eliminarTarea(gestor)`: Lógica de UI para eliminar una tarea.
+  - `editarTarea(gestor)`: Lógica de UI para editar una tarea.
+  - `agregarNuevaTarea(gestor)`: Lógica de UI para agregar una tarea.
+  - `verPanel(gestor)`: Muestra el panel de estadísticas.
+  - `verTareasConOrden(gestor)`: Muestra tareas con opciones de ordenamiento.
+  - `solicitarEstrategiaPersistencia()`: Pide al usuario la estrategia de persistencia.
+  - `obtenerSugerencias(gestor)`: Muestra sugerencias del motor de inferencia.
+
 
 
 # 🏛️ Explicación Detallada de la Arquitectura
@@ -171,7 +184,16 @@ markmap:
 - **`editar()`**: Único método para modificar una tarea. Actualiza la `ultimaEdicion`.
 - **`static importarTarea(data)`**: Método de "fábrica" para la **rehidratación**. Convierte un objeto simple (de JSON o SQL) en una instancia real de la clase `Tarea`.
 
-## 6. `utils/Entradas.ts` - La Utilidad de Entrada
+## 6. `vista.ts` - La Capa de Presentación
+- **Propósito**: Encargado de toda la lógica relacionada con la interfaz de usuario (UI) en la consola.
+- Abstrae la manera en que la información se muestra y cómo se capturan las entradas del usuario para acciones específicas.
+- **Funciones Principales**:
+  - `mostrarEncabezado`, `mostrarLista`, `pausa`: Funciones básicas para renderizar la UI.
+  - `agregarNuevaTarea`, `editarTarea`, `eliminarTarea`: Orquestan la interacción con el usuario para recolectar los datos necesarios y luego llaman a los métodos correspondientes en el `gestor`.
+  - `verPanel`, `verTareasConOrden`: Muestran vistas más complejas de los datos, como estadísticas o listas ordenadas.
+  - `solicitarEstrategiaPersistencia`: Aísla la lógica para la configuración inicial.
+
+## 7. `utils/Entradas.ts` - La Utilidad de Entrada
 - Abstrae la lógica para obtener texto del usuario en la consola.
 - **Función `input()`**
   - Usa `readline-sync` para pausar y esperar la entrada del usuario.
