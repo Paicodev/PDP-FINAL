@@ -1,7 +1,8 @@
-import { GestorTareas } from "./controllers/gestorTareas";
+import { GestorTareas } from "./controllers/GestorTareas";
 import { Tarea, TareaDificultad } from "./models/Tarea";
 import { input } from "./utils/Entradas";
 import * as Estadisticas from './utils/Estadisticas';
+import * as Reglas from './utils/Reglas';
 
 // Lógica de Presentación (UI)
 
@@ -22,6 +23,15 @@ export function mostrarLista(tareas: Tarea[]) {
         // Usamos los getters de la clase Tarea
         console.log(`${i + 1}. [${t.getEstado()}] ${t.getTitulo()} ${t.getDificultadVisual()}`);
         console.log(`   ID: ${t.getId()}`); // Mostramos ID para operaciones
+
+        // Usamos toLocaleDateString() para que se lea "dd/mm/aaaa"
+        const creacion = t.getFechaCreacion().toLocaleDateString();
+        // Usamos un operador ternario: Si tiene fecha ? se muestra : imprime "Sin vencimiento"
+        const vencimiento = t.getFechaVencimiento() 
+                            ? t.getFechaVencimiento()?.toLocaleDateString() 
+                            : "Sin vencimiento";
+        console.log(`   Creada: ${creacion} | Vence: ${vencimiento}`);
+
         if (t.getDescripcion()) console.log(`   Desc: ${t.getDescripcion()}`);
     });
 }
@@ -293,4 +303,25 @@ export function solicitarEstrategiaPersistencia(): string {
         }
     }
     return opcion;
+export function obtenerSugerencias(gestor: GestorTareas){
+            console.log("========================================");
+            console.log("   MOTOR DE INFERENCIA LÓGICA   ");
+            console.log("========================================");
+            console.log("Analizando hechos y reglas...");
+
+            // 1. Obtenemos todas las tareas (Hechos)
+            const listaHechos = gestor.obtenerTodasLasTareas();
+
+            // 2. Ejecutamos el motor de inferencia
+            const sugerencias = Reglas.obtenerSugerenciaLogica(listaHechos);
+
+            if (sugerencias.length > 0) {
+                console.log(`\n El sistema sugiere realizar estas ${sugerencias.length} tareas ahora:\n`);
+                console.log("   (Criterio: Están 'En Curso' O son 'Fáciles y Pendientes')\n");
+
+                mostrarLista(sugerencias);
+            } else {
+                console.log("\n El motor lógico no encontró sugerencias inmediatas.");
+                console.log("   (Quizás todo es muy difícil o ya terminaste todo).");
+            }
 }

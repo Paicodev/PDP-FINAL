@@ -42,8 +42,10 @@ exports.agregarNuevaTarea = agregarNuevaTarea;
 exports.verPanel = verPanel;
 exports.verTareasConOrden = verTareasConOrden;
 exports.solicitarEstrategiaPersistencia = solicitarEstrategiaPersistencia;
+exports.obtenerSugerencias = obtenerSugerencias;
 const Entradas_1 = require("./utils/Entradas");
 const Estadisticas = __importStar(require("./utils/Estadisticas"));
+const Reglas = __importStar(require("./utils/Reglas"));
 // Lógica de Presentación (UI)
 function mostrarEncabezado() {
     console.clear();
@@ -58,9 +60,17 @@ function mostrarLista(tareas) {
     }
     console.log("\n--- LISTADO DE TAREAS ---");
     tareas.forEach((t, i) => {
+        var _a;
         // Usamos los getters de la clase Tarea
         console.log(`${i + 1}. [${t.getEstado()}] ${t.getTitulo()} ${t.getDificultadVisual()}`);
         console.log(`   ID: ${t.getId()}`); // Mostramos ID para operaciones
+        // Usamos toLocaleDateString() para que se lea "dd/mm/aaaa"
+        const creacion = t.getFechaCreacion().toLocaleDateString();
+        // Usamos un operador ternario: Si tiene fecha ? se muestra : imprime "Sin vencimiento"
+        const vencimiento = t.getFechaVencimiento()
+            ? (_a = t.getFechaVencimiento()) === null || _a === void 0 ? void 0 : _a.toLocaleDateString()
+            : "Sin vencimiento";
+        console.log(`   Creada: ${creacion} | Vence: ${vencimiento}`);
         if (t.getDescripcion())
             console.log(`   Desc: ${t.getDescripcion()}`);
     });
@@ -296,4 +306,24 @@ function solicitarEstrategiaPersistencia() {
         }
     }
     return opcion;
+    mostrarLista(tareasOrdenadas);
+}
+function obtenerSugerencias(gestor) {
+    console.log("========================================");
+    console.log("   MOTOR DE INFERENCIA LÓGICA   ");
+    console.log("========================================");
+    console.log("Analizando hechos y reglas...");
+    // 1. Obtenemos todas las tareas (Hechos)
+    const listaHechos = gestor.obtenerTodasLasTareas();
+    // 2. Ejecutamos el motor de inferencia
+    const sugerencias = Reglas.obtenerSugerenciaLogica(listaHechos);
+    if (sugerencias.length > 0) {
+        console.log(`\n El sistema sugiere realizar estas ${sugerencias.length} tareas ahora:\n`);
+        console.log("   (Criterio: Están 'En Curso' O son 'Fáciles y Pendientes')\n");
+        mostrarLista(sugerencias);
+    }
+    else {
+        console.log("\n El motor lógico no encontró sugerencias inmediatas.");
+        console.log("   (Quizás todo es muy difícil o ya terminaste todo).");
+    }
 }

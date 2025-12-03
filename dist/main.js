@@ -34,28 +34,39 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const Entradas_1 = require("./utils/Entradas");
-const gestorTareas_1 = require("./controllers/gestorTareas");
+const GestorTareas_1 = require("./controllers/GestorTareas");
 const PersistenciaJSON_1 = require("./services/PersistenciaJSON");
-const persistenciaSQL_1 = require("./services/persistenciaSQL");
+const PersistenciaSQL_1 = require("./services/PersistenciaSQL");
 const UI = __importStar(require("./vista"));
 //SELECCIÓN DE ESTRATEGIA 
 function configurarBaseDeDatos() {
-    // 1. La vista se encarga de solicitar la opción al usuario.
-    const opcion = UI.solicitarEstrategiaPersistencia();
-    let estrategia;
-    if (opcion === '2') {
-        console.log(">> Iniciando motor SQL...");
-        estrategia = new persistenciaSQL_1.PersistenciaSQL();
+    let opcion = '';
+    let estrategia = null;
+    while (opcion !== '1' && opcion !== '2') {
+        console.clear();
+        console.log("========================================");
+        console.log("     CONFIGURACIÓN DE ALMACENAMIENTO    ");
+        console.log("========================================");
+        console.log("Selecciones el motor de persistencia");
+        console.log("1. Archivo de Texto (JSON)");
+        console.log("2- Base de Datos Local (SQLite)");
+        console.log("========================================");
+        opcion = (0, Entradas_1.input)("Elige una opción (1-2): ");
+        if (opcion === '2') {
+            console.log(">> Iniciando motor SQL...");
+            estrategia = new PersistenciaSQL_1.PersistenciaSQL();
+        }
+        else if (opcion == '1') {
+            console.log(">> Iniciando sistema de archivos JSON...");
+            estrategia = new PersistenciaJSON_1.PersistenciaJSON();
+        }
+        else {
+            console.log(" Opción inválida. Intente nuevamente.");
+            (0, Entradas_1.input)("Presiona ENTER para reintentar...");
+        }
     }
-    else {
-        // Por defecto o si es '1', usamos JSON.
-        console.log(">> Iniciando sistema de archivos JSON...");
-        estrategia = new PersistenciaJSON_1.PersistenciaJSON();
-    }
-    // 2. Inyección de Dependencias: El gestor recibe la estrategia elegida.
-    // Ya no es necesario el "non-null assertion" (!) porque la lógica asegura
-    // que 'estrategia' siempre tendrá un valor.
-    return new gestorTareas_1.GestorTareas(estrategia);
+    // Inyección de Dependencias: El gestor recibe la estrategia elegida
+    return new GestorTareas_1.GestorTareas(estrategia); //aqui el signo ! quiere decir que estrategia no es null.
 }
 // ==========================================
 // BUCLE PRINCIPAL (Programación Estructurada)
@@ -73,6 +84,7 @@ function main() {
         console.log("4. Editar tarea");
         console.log("5. Eliminar tarea");
         console.log("6. Ver Estadísticas");
+        console.log("7. Asistente IA (Lógica)");
         console.log("0. Salir");
         console.log("----------------------------------------");
         const opcion = (0, Entradas_1.input)("Elija una opción: ");
@@ -103,6 +115,11 @@ function main() {
                 break;
             case '6':
                 UI.verPanel(gestor);
+                UI.pausa();
+                break;
+            case '7':
+                console.clear();
+                UI.obtenerSugerencias(gestor);
                 UI.pausa();
                 break;
             case '0':

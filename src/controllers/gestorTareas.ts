@@ -1,5 +1,6 @@
 import { Tarea, TareaEstado, TareaDificultad } from '../models/Tarea';
 import { IPersistencia } from '../interfaces/IPersistencia'; 
+import * as logic from 'logicjs'; 
 
 export class GestorTareas {
     
