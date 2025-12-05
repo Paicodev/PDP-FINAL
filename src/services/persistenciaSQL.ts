@@ -30,7 +30,7 @@ export class PersistenciaSQL implements IPersistencia {
     }
 
     public guardar(tareas: Tarea[]): void {
-        // 
+        
         const insert = this.db.prepare(`
             INSERT INTO tareas (id, titulo, descripcion, estado, dificultad, fechaCreacion, fechaVencimiento, ultimaEdicion)
             VALUES (@id, @titulo, @descripcion, @estado, @dificultad, @fechaCreacion, @fechaVencimiento, @ultimaEdicion)
@@ -42,7 +42,23 @@ export class PersistenciaSQL implements IPersistencia {
         const transaction = this.db.transaction(() => {
             deleteMany.run(); // Limpiamos la tabla
             
+            
             for (const t of tareas) {
+
+                /*
+                // [MODO INSEGURO - SOLO PARA DEMOSTRACIÓN]
+                //titulo: X'); DROP TABLE tareas; --
+                 const sqlInseguro = `INSERT INTO tareas (id, titulo) VALUES ('${t.getId()}', '${t.getTitulo()}')`;
+                this.db.exec(sqlInseguro); 
+                
+               */
+              // [MODO SEGURO - PRINCIPAL]---------------------------------------------------
+              //-------------------SIMULAR ROLLBACK------ ----------------//
+              if (t.getTitulo() === "AGARRAR LA PALA") {
+            console.log("¡ESO ES IMPOSIBLE! (Rollback iniciado)");
+            throw new Error("Error inesperado durante la transacción.");
+                }
+                //-------------------------------------------------------//
                 // Ejecutamos la inserción mapeando los getters
                 insert.run({
                     id: t.getId(),
@@ -54,10 +70,14 @@ export class PersistenciaSQL implements IPersistencia {
                     fechaVencimiento: t.getFechaVencimiento()?.toISOString() || null,
                     ultimaEdicion: t.getUltimaEdicion().toISOString()
                 });
+                 
+                //----------------------------------------------------------------------//
             }
         });
 
+        
         transaction(); // Ejecutamos todo el bloque
+        
     }
 
     public cargar(): Tarea[] {
