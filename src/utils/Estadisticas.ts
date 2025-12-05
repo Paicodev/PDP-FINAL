@@ -57,8 +57,8 @@ export const obtenerTareasVencidas = (tareas: Tarea[]): Tarea[] => {
  * Criterio Funcional: la dificultad debe ser "Difícil" y el estado "Pendiente" o "En Curso".
  */
 export const obtenerTareasPrioridadAlta = (tareas: Tarea[]): Tarea[] => {
-    return tareas.filter(t => 
-        t.getDificultad() === 'Difícil' && 
+    return tareas.filter(t =>
+        t.getDificultad() === 'Difícil' &&
         (t.getEstado() === 'Pendiente' || t.getEstado() === 'En Curso')
     );
 };
@@ -70,7 +70,7 @@ export const obtenerTareasPrioridadAlta = (tareas: Tarea[]): Tarea[] => {
  * Para respetar la INMUTABILIDAD funcional, primero creamos una copia con el spread operator: [...tareas].
  */
 export const ordenarTareas = (
-    tareas: Tarea[], 
+    tareas: Tarea[],
     criterio: 'titulo' | 'vencimiento' | 'creacion' | 'dificultad'
 ): Tarea[] => {
     // hacemos una copia de seguridad (Inmutabilidad)
@@ -83,7 +83,7 @@ export const ordenarTareas = (
             case 'titulo':
                 // Comparación alfabética
                 return a.getTitulo().localeCompare(b.getTitulo());
-            
+
             case 'creacion':
                 // Comparación numérica de fechas
                 return a.getFechaCreacion().getTime() - b.getFechaCreacion().getTime();
@@ -103,7 +103,7 @@ export const ordenarTareas = (
                         'Medio' (2) - 'Medio' (2) = 0     -> son iguales  
                 */
                 return valorMap[a.getDificultad()] - valorMap[b.getDificultad()];
-            
+
             default:
                 return 0;
         }

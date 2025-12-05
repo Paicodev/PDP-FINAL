@@ -1,4 +1,4 @@
-import { Tarea } from '../models/Tarea'; 
+import { Tarea } from '../models/Tarea';
 
 // Definimos el contrato: Cualquier cosa que quiera guardar tareas, debe tener estos dos métodos.
 export interface IPersistencia {

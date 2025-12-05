@@ -2,14 +2,14 @@ import { Tarea } from '../models/Tarea';
 import logic from 'logicjs';
 
 export const obtenerSugerenciaLogica = (tareas: Tarea[]): Tarea[] => {
-    
+
     const sugeridas = tareas.filter(t => {
         // HECHOS
         const estado = t.getEstado();
         const dificultad = t.getDificultad();
 
         // VARIABLE LÓGICA
-        const x = logic.lvar(); 
+        const x = logic.lvar();
 
         // REGLAS
         const reglaContinuidad = logic.eq(estado, 'En Curso');

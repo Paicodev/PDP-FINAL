@@ -1,19 +1,19 @@
 import { Tarea, TareaEstado, TareaDificultad } from '../models/Tarea';
-import { IPersistencia } from '../interfaces/IPersistencia'; 
-import * as logic from 'logicjs'; 
+import { IPersistencia } from '../interfaces/IPersistencia';
+import * as logic from 'logicjs';
 
 export class GestorTareas {
-    
+
     // POO: Encapsulamos el estado. Nadie fuera de esta clase
     // puede acceder o modificar el array de tareas directamente.
     private tareas: Tarea[] = [];
-    private persistencia: IPersistencia; 
+    private persistencia: IPersistencia;
 
-    
+
     constructor(estrategia: IPersistencia) {
         //estrategia lo manejará luego el modulo main.ts
         this.persistencia = estrategia;
-        this.tareas = this.persistencia.cargar(); 
+        this.tareas = this.persistencia.cargar();
     }
 
     //Metodo impuro porque modifica el estado interno
@@ -26,7 +26,7 @@ export class GestorTareas {
      * (POO: Método que modifica el estado interno)
      */
     public agregarTarea(
-        titulo: string, 
+        titulo: string,
         descripcion?: string,
         dificultad?: TareaDificultad,
         fechaVencimiento?: Date
@@ -34,7 +34,7 @@ export class GestorTareas {
         const nuevaTarea = new Tarea(titulo, descripcion, dificultad, fechaVencimiento);
         //impuro
         this.tareas.push(nuevaTarea);
-        
+
         this.guardarCambios();
 
         return nuevaTarea;
@@ -55,13 +55,13 @@ export class GestorTareas {
     public obtenerTodasLasTareas(): Tarea[] {
         return [...this.tareas];
     }
-    
+
     /**
      * Devuelve todas las tareas que NO están "Canceladas".
      * (PF: Usamos .filter() para una consulta pura sobre la lista)
      */
     public obtenerTareasActivas(): Tarea[] {
-        return this.tareas.filter(tarea => tarea.getEstado() !== 'Cancelada'); 
+        return this.tareas.filter(tarea => tarea.getEstado() !== 'Cancelada');
     }
 
     /**
@@ -70,9 +70,9 @@ export class GestorTareas {
      */
     public buscarTareasPorTitulo(clave: string): Tarea[] {
         const claveLower = clave.toLowerCase().trim();
-        
+
         // Filtramos las tareas que incluyan el texto (ignorando mayúsculas)
-        return this.tareas.filter(tarea => 
+        return this.tareas.filter(tarea =>
             tarea.getTitulo().toLowerCase().includes(claveLower)
         );
     }
@@ -83,7 +83,7 @@ export class GestorTareas {
      */
     public actualizarTarea(
         id: string,
-        titulo: string, 
+        titulo: string,
         descripcion: string,
         dificultad: TareaDificultad,
         estado: TareaEstado,
@@ -93,7 +93,7 @@ export class GestorTareas {
         if (tarea) {
             // Usamos el método 'update' de la propia Tarea
             tarea.update(titulo, descripcion, dificultad, estado, fechaVencimiento); // Asumo que Tarea.ts tiene update()
-           this.guardarCambios(); 
+            this.guardarCambios();
             return true;
         }
         return false; // No se encontró la tarea
@@ -106,7 +106,7 @@ export class GestorTareas {
      */
     public eliminarTarea(id: string): boolean {
         const tarea = this.obtenerTareaPorId(id);
-        
+
         // Solo la "borramos" si existe y no está ya cancelada
         if (tarea && tarea.getEstado() !== 'Cancelada') { // Asumo getEstado()
             tarea.setEstado('Cancelada'); // Asumo setEstado()

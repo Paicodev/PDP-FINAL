@@ -6,7 +6,7 @@ import { IPersistencia } from './interfaces/IPersistencia';
 import * as UI from "./vista";
 
 //SELECCIÓN DE ESTRATEGIA 
-function configurarBaseDeDatos(): GestorTareas{
+function configurarBaseDeDatos(): GestorTareas {
     // La vista se encarga de solicitar la opción al usuario.
     const opcion = UI.solicitarEstrategiaPersistencia();
     let estrategia: IPersistencia;
@@ -45,7 +45,7 @@ function main() {
         console.log("----------------------------------------");
 
         const opcion = input("Elija una opción: ");
-    
+
         switch (opcion) {
             case '1':
                 UI.verTareasConOrden(gestor);
@@ -75,17 +75,17 @@ function main() {
                 UI.eliminarTarea(gestor);
                 UI.pausa();
                 break;
-            
+
             case '6':
                 UI.verPanel(gestor);
                 UI.pausa();
                 break;
-            
+
             case '7':
-            console.clear();
-            UI.obtenerSugerencias(gestor);
-            UI.pausa();
-            break;
+                console.clear();
+                UI.obtenerSugerencias(gestor);
+                UI.pausa();
+                break;
 
             case '0':
                 salir = true;

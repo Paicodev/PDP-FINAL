@@ -5,11 +5,11 @@ import { IPersistencia } from '../interfaces/IPersistencia';
 /* Constante para la ruta del archivo JSON,
 Para que la ruta del archivo sea inmutable y fácil de gestionar*/
 
-const RUTA_ARCHIVO = './tareas.json'; 
+const RUTA_ARCHIVO = './tareas.json';
 
 //Se implementa la interfaz
 export class PersistenciaJSON implements IPersistencia {
-    
+
     /**
      * Guarda el array de tareas en un archivo de texto plano (JSON).
      * (Programación Estructurada: Uso de I/O secuencial)

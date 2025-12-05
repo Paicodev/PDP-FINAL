@@ -6,7 +6,7 @@ import * as Reglas from './utils/Reglas';
 
 // Lógica de Presentación (UI)
 
-export function mostrarEncabezado(){
+export function mostrarEncabezado() {
     console.clear();
     console.log("========================================");
     console.log("   GESTOR DE TAREAS - PARADIGMAS        ");
@@ -27,9 +27,9 @@ export function mostrarLista(tareas: Tarea[]) {
         // Usamos toLocaleDateString() para que se lea "dd/mm/aaaa"
         const creacion = t.getFechaCreacion().toLocaleDateString();
         // Usamos un operador ternario: Si tiene fecha ? se muestra : imprime "Sin vencimiento"
-        const vencimiento = t.getFechaVencimiento() 
-                            ? t.getFechaVencimiento()?.toLocaleDateString() 
-                            : "Sin vencimiento";
+        const vencimiento = t.getFechaVencimiento()
+            ? t.getFechaVencimiento()?.toLocaleDateString()
+            : "Sin vencimiento";
         console.log(`   Creada: ${creacion} | Vence: ${vencimiento}`);
 
         if (t.getDescripcion()) console.log(`   Desc: ${t.getDescripcion()}`);
@@ -48,7 +48,7 @@ export function eliminarTarea(gestor: GestorTareas) {
     const activas = gestor.obtenerTareasActivas();
     if (activas.length === 0) {
         console.log("No hay tareas disponibles para eliminar.");
-        return; 
+        return;
     }
     // Mostramos las opciones para eliminar
     mostrarLista(activas);
@@ -56,17 +56,17 @@ export function eliminarTarea(gestor: GestorTareas) {
 
     // guardamos la selección
     const borrar = input("Ingrese el NÚMERO de la tarea a eliminar: ");
-    
+
     // cancelación
     if (borrar === '0') {
         console.log("Operación cancelada.");
-        return; 
+        return;
     }
 
     // validamos la entrada al valor correspondiente
     const indice = parseInt(borrar) - 1;
 
-    
+
     if (indice >= 0 && indice < activas.length) {
         // eliminamos la tarea seleccionada
         const tarea = activas[indice];
@@ -110,42 +110,42 @@ function obtenerNuevosDatosTarea(tareaActual: Tarea) {
     return { nuevoTitulo, nuevaDesc, nuevaDificultad, nuevoEstado };
 }
 
-export function editarTarea(gestor: GestorTareas){
+export function editarTarea(gestor: GestorTareas) {
     console.log("--- EDITAR TAREA ---")
     // Mostrar opciones
     const activas = gestor.obtenerTareasActivas();
-    if( activas.length === 0){
+    if (activas.length === 0) {
         console.log("No hay tareas para editar.");
         return;
     }
 
     mostrarLista(activas);
     console.log("0. Cancelar");
-    
+
     // Seleccion de ID
     const idSeleccion = input("Ingrese el Número de la tarea a editar: ");
     if (idSeleccion === '0' || idSeleccion.trim() === '' || isNaN(Number(idSeleccion))) {
         return;
     }
 
-    const indice = parseInt(idSeleccion) -1;
+    const indice = parseInt(idSeleccion) - 1;
 
-    if ( indice < 0 || indice >= activas.length){
+    if (indice < 0 || indice >= activas.length) {
         console.log("Opción inválida, el número ingresado no existe.");
         return;
     }
     const tarea = activas[indice];
-    console.log("Editando: "+ tarea.getTitulo());
+    console.log("Editando: " + tarea.getTitulo());
 
     // Usamos la función auxiliar para mantener esta función más limpia
     const { nuevoTitulo, nuevaDesc, nuevaDificultad, nuevoEstado } = obtenerNuevosDatosTarea(tarea);
 
     gestor.actualizarTarea(
-        tarea.getId(), 
-        nuevoTitulo, 
-        nuevaDesc, 
-        nuevaDificultad, 
-        nuevoEstado, 
+        tarea.getId(),
+        nuevoTitulo,
+        nuevaDesc,
+        nuevaDificultad,
+        nuevoEstado,
         tarea.getFechaVencimiento()
     );
 
@@ -155,7 +155,7 @@ export function editarTarea(gestor: GestorTareas){
 export function agregarNuevaTarea(gestor: GestorTareas) {
     console.log("\n--- NUEVA TAREA ---");
     const titulo = input("Título (Obligatorio): ");
-    
+
     // Validación de entrada
     if (!titulo) {
         console.log("¡El título no puede estar vacío!");
@@ -163,10 +163,10 @@ export function agregarNuevaTarea(gestor: GestorTareas) {
     }
 
     const desc = input("Descripción: ");
-    
+
     console.log("Dificultad: 1. Fácil | 2. Medio | 3. Difícil");
     const difInput = input("Elija (1-3): ");
-    
+
     let dificultad: TareaDificultad = 'Fácil'; // Valor por defecto
     if (difInput === '2') dificultad = 'Medio';
     if (difInput === '3') dificultad = 'Difícil';
@@ -174,7 +174,7 @@ export function agregarNuevaTarea(gestor: GestorTareas) {
     console.log("Fecha Vencimiento (AAAA-MM-DD) o Enter para omitir:");
     const fechaStr = input("Fecha: ");
     let fechaVenc: Date | undefined = undefined;
-    
+
     // Validación de la fecha
     if (fechaStr && !isNaN(new Date(fechaStr).getTime())) {
         fechaVenc = new Date(fechaStr);
@@ -216,7 +216,7 @@ export function verPanel(gestor: GestorTareas) {
     console.log("\n[Alertas]");
     console.log(` Vencidas: ${vencidas.length}`);
     vencidas.forEach(t => console.log(`    -> ${t.getTitulo()} (Vencía: ${t.getFechaVencimiento()?.toLocaleDateString()})`));
-    
+
     console.log(` Prioridad Alta: ${prioridadAlta.length}`);
     prioridadAlta.forEach(t => console.log(`    -> ${t.getTitulo()}`));
 
@@ -285,7 +285,7 @@ export function verTareasConOrden(gestor: GestorTareas) {
 export function solicitarEstrategiaPersistencia(): string {
     let opcion = '';
 
-    while(opcion !== '1' && opcion !== '2'){
+    while (opcion !== '1' && opcion !== '2') {
         console.clear();
         console.log("========================================");
         console.log("     CONFIGURACIÓN DE ALMACENAMIENTO    ");
@@ -304,25 +304,25 @@ export function solicitarEstrategiaPersistencia(): string {
     }
     return opcion;
 }
-export function obtenerSugerencias(gestor: GestorTareas){
-            console.log("========================================");
-            console.log("   MOTOR DE INFERENCIA LÓGICA   ");
-            console.log("========================================");
-            console.log("Analizando hechos y reglas...");
+export function obtenerSugerencias(gestor: GestorTareas) {
+    console.log("========================================");
+    console.log("   MOTOR DE INFERENCIA LÓGICA   ");
+    console.log("========================================");
+    console.log("Analizando hechos y reglas...");
 
-            // 1. Obtenemos todas las tareas (Hechos)
-            const listaHechos = gestor.obtenerTodasLasTareas();
+    // 1. Obtenemos todas las tareas (Hechos)
+    const listaHechos = gestor.obtenerTodasLasTareas();
 
-            // 2. Ejecutamos el motor de inferencia
-            const sugerencias = Reglas.obtenerSugerenciaLogica(listaHechos);
+    // 2. Ejecutamos el motor de inferencia
+    const sugerencias = Reglas.obtenerSugerenciaLogica(listaHechos);
 
-            if (sugerencias.length > 0) {
-                console.log(`\n El sistema sugiere realizar estas ${sugerencias.length} tareas ahora:\n`);
-                console.log("   (Criterio: Están 'En Curso' O son 'Fáciles y Pendientes')\n");
+    if (sugerencias.length > 0) {
+        console.log(`\n El sistema sugiere realizar estas ${sugerencias.length} tareas ahora:\n`);
+        console.log("   (Criterio: Están 'En Curso' O son 'Fáciles y Pendientes')\n");
 
-                mostrarLista(sugerencias);
-            } else {
-                console.log("\n El motor lógico no encontró sugerencias inmediatas.");
-                console.log("   (Quizás todo es muy difícil o ya terminaste todo).");
-            }
-        }
+        mostrarLista(sugerencias);
+    } else {
+        console.log("\n El motor lógico no encontró sugerencias inmediatas.");
+        console.log("   (Quizás todo es muy difícil o ya terminaste todo).");
+    }
+}
