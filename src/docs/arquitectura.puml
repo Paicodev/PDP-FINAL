@@ -1,0 +1,51 @@
+@startuml
+' Título del diagrama
+title Diagrama de Clases - Gestor de Tareas
+
+' Oculta detalles innecesarios para una vista de alto nivel
+hide empty members
+
+' Interfaz de Persistencia (El Contrato)
+interface IPersistencia {
+  + guardar(tareas: Tarea[]): void
+  + cargar(): Tarea[]
+}
+
+' Clases de Estrategia Concretas
+class PersistenciaJSON implements IPersistencia {
+  - RUTA_ARCHIVO: string
+}
+
+class PersistenciaSQL implements IPersistencia {
+  - db: Database
+  + inicializarTabla(): void
+}
+
+' El Orquestador / Contexto
+class GestorTareas {
+  - tareas: Tarea[]
+  - persistencia: IPersistencia
+  + constructor(persistencia: IPersistencia)
+  + agregarTarea(): void
+  + eliminarTarea(): void
+  + obtenerTodasLasTareas(): Tarea[]
+}
+
+' El Modelo de Datos
+class Tarea {
+  - id: string
+  - titulo: string
+  - estado: string
+  + getTitulo(): string
+  + getEstado(): string
+}
+
+' --- Relaciones ---
+
+' GestorTareas USA UNA IPersistencia (Inyección de Dependencias)
+GestorTareas "1" o--> "1" IPersistencia : usa
+
+' GestorTareas GESTIONA MUCHAS Tareas (Composición)
+GestorTareas "1" *-- "0..*" Tarea : gestiona
+
+@enduml

@@ -1,0 +1,23 @@
+@startuml
+actor Usuario
+participant "main.ts" as UI
+participant "GestorTareas" as Gestor
+participant "IPersistencia" as DB
+
+Usuario -> UI: Elige "Agregar Tarea"
+UI -> Usuario: Pide título y descripción
+Usuario -> UI: Ingresa datos
+UI -> Gestor: agregarTarea(titulo, desc, dif)
+activate Gestor
+
+Gestor -> Gestor: new Tarea(...)
+Gestor -> DB: guardar(tareas)
+activate DB
+DB --> Gestor: void
+deactivate DB
+
+Gestor --> UI: void
+deactivate Gestor
+UI -> Usuario: Muestra "Tarea guardada"
+
+@enduml
